@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>导航栏吸顶 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">导航栏吸顶</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 9, 2020&nbsp;&nbsp;16:06:17</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/js/">js</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="导航栏吸顶"><a href="#导航栏吸顶" class="headerlink" title="导航栏吸顶"></a>导航栏吸顶</h2><blockquote>
+<p>当页面滚动超过导航栏时，导航栏依附固定在页面顶端</p>
+</blockquote>
+<p>下面介绍两种方式吧， 一种是 <code>position: sticky</code>, 另一种是<code>getBoundingClientRect()</code></p>
+<h2 id="position-sticky-实现"><a href="#position-sticky-实现" class="headerlink" title="position: sticky 实现"></a>position: sticky 实现</h2><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.stickyPostion</span> &#123;</span><br><span class="line">    <span class="attribute">postion</span>: sticky;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用条件：</p>
+<ul>
+<li>父元素不能<code>overflow:hidden</code>或者<code>overflow:auto</code>属性。</li>
+<li>必须指定<code>top</code>、<code>bottom</code>、<code>left</code>、<code>right</code>4个值之一，否则只会处于相对定位</li>
+<li>父元素的高度不能低于sticky元素的高度</li>
+<li>sticky元素仅在其父元素内生效</li>
+</ul>
+<h3 id="sticky-坑"><a href="#sticky-坑" class="headerlink" title="sticky 坑"></a>sticky 坑</h3><ul>
+<li>兼容性不太好</li>
+<li>不能触发 <code>BFC</code></li>
+</ul>
+<h2 id="getBoundingClientRect"><a href="#getBoundingClientRect" class="headerlink" title="getBoundingClientRect()"></a>getBoundingClientRect()</h2><p>getBoundingClientRect用于获得页面中某个元素的左，上，右和下分别相对浏览器视窗的位置。<br><strong>getBoundingClientRect是DOM元素到浏览器可视范围的距离（不包含文档卷起的部分）</strong>。</p>
+<ul>
+<li>获取当前 nav 到浏览器顶端的距离。</li>
+<li>直接监听scroll 事件，</li>
+<li><strong>用div包裹住nav导航栏，我们只需要获取当前div到顶端的距离即可，等到时 top值为0的时候，设置子级的position:fixed, 还原只需取消掉子级的position即可</strong><ul>
+<li>如果没有用div 包裹 nav导航栏的话，等top 值为0，就无法还原了，position 一直为fix, getBoundingClientRect.top值一直为0;</li>
+</ul>
+</li>
+</ul>
+<p>结构应该如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ref</span>=<span class="string">&#123;this.stickyRef&#125;</span> <span class="attr">id</span>=<span class="string">"sticky"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&#123;isFixed</span> ? <span class="attr">styles.fix</span> <span class="attr">:</span> <span class="attr">styles.static</span>&#125;&gt;</span> // 这个为nav</span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span>&gt;</span>吸顶效果<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">componentDidMount() &#123;</span><br><span class="line">    <span class="keyword">const</span> top = <span class="keyword">this</span>.stickyRef.current.getBoundingClientRect().top;</span><br><span class="line">    <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">        initPostionTop: top</span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="built_in">window</span>.addEventListener(<span class="string">'scroll'</span>, <span class="keyword">this</span>.handleScroll);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">handleScroll = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; isFixed, initPostionTop &#125; = <span class="keyword">this</span>.state</span><br><span class="line">    <span class="keyword">const</span> scrollTop = e.srcElement.body.scrollTop || e.srcElement.documentElement.scrollTop;</span><br><span class="line">    <span class="comment">// 这里做了个优化，防止频繁setState, 如果一开始为吸顶，以及滚动距离大于 nav 到顶部的距离的时候，</span></span><br><span class="line">    <span class="comment">// 或者 （不吸顶同时当前滚动距离小于nav到顶部的距离时)我们操作</span></span><br><span class="line">    <span class="keyword">if</span>(isFixed &amp;&amp; scrollTop &gt;= initPostionTop || !isFixed &amp;&amp; scrollTop &lt;= initPostionTop) &#123;</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;  <span class="keyword">else</span>  &#123;</span><br><span class="line">        <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">            isFixed: scrollTop &gt; initPostionTop</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="小程序-我使用的是Taro"><a href="#小程序-我使用的是Taro" class="headerlink" title="小程序 (我使用的是Taro)"></a>小程序 (我使用的是Taro)</h2><blockquote>
+<p>小程序不支持 <code>window.addEventListener(&#39;scroll&#39;, this.handleScroll);</code>，只有<code>onPageScroll</code></p>
+</blockquote>
+<p>下面是官方说明<br><strong>注意：请只在需要的时候才在 page 中定义此方法，不要定义空方法。以减少不必要的事件派发对渲染层-逻辑层通信的影响。注意：请避免在 onPageScroll 中过于频繁的执行 this.setState() 等引起逻辑层-渲染层通信的操作。尤其是每次传输大量数据，会影响通信耗时。</strong></p>
+<p>taro获取节点有点坑</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">componentDidMount() &#123;</span><br><span class="line">    <span class="comment">// 注意this.$scope</span></span><br><span class="line">    <span class="keyword">const</span> query = Taro.createSelectorQuery().in(<span class="keyword">this</span>.$scope);</span><br><span class="line">    query.select(<span class="string">'#sticky'</span>).boundingClientRect(<span class="function">(<span class="params">rect</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">            initPostionTop: rect.top</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;).exec();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>onPageScroll 代码基本一样</p>
+<h2 id="坑"><a href="#坑" class="headerlink" title="坑"></a>坑</h2><ul>
+<li>这种方式有个坑，当吸顶的一瞬间，会发生抖动，这是因为 <code>position</code>变成<code>fixed</code> 的时候脱离了文档流。<br>解决方案是 在<code>postion:fixed;</code>的元素里添加<code>transform: translateZ(0);</code>,我想应该是开启gpu 渲染，所以变得顺滑了吧</li>
+</ul>
+<h2 id="关于优化"><a href="#关于优化" class="headerlink" title="关于优化"></a>关于优化</h2><blockquote>
+<p>h5 优化，可以用另一种方式，就是用 监听滚动的时候使用 节流， 可以用 lodash.throttle</p>
+</blockquote>
+<p><code>window.addEventListener(&#39;scroll&#39;, _.throttle(self.handleScrollThree, 50));</code></p>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://i.loli.net/2020/04/10/a4kQYARnKp3oIsy.gif" alt="b8827be2b9af0f70b7b9e3e9838e30e6.gif"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>Chow Bill</span>
+                    </p>
+                
+                
+                
+                
+                     <p class="copyright-item">
+                         <span>Slogan:</span>
+                         <span>Do you believe in <strong>DESTINY</strong>?</span>
+                     </p>
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/js/"># js</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/04/11/hello-world/">Hello World</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/08/%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E4%BD%BF%E7%BD%91%E7%AB%99%E5%8F%98%E7%81%B0/">一行代码使网站变灰</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'https://github.com/Zhou-Bill/Zhou-Bill.github.io.git',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5('location.pathname'),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: '10',
+        pagerDirection: 'last',
+        createIssueManually: 'true',
+        distractionFreeMode: 'false'
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<span class="site-uv">
+    总访客量:
+    <i class="busuanzi-value" id="busuanzi_value_site_uv"></i>
+</span>&nbsp;
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+      
+</footer>
+
+    </div>
+</body>
+</html>
