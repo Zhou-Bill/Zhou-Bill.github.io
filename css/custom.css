@@ -38,11 +38,12 @@
   justify-content: center;
   align-items: center;
   background: #fff;
+  border-radius: 10px;
 }
-.sponser:hover .img .title {
-  color: rbg(20, 81, 122);
+.sponser:hover .title {
+  color: #81a6ed;
 }
-.sponser:hover .img .alipay {
+.sponser:hover .alipay {
   width: 100px;
   height: 100px;
 }
