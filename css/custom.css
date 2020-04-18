@@ -21,10 +21,10 @@
   border: 1px solid #ccc;
   cursor: pointer;
 }
-.sponser .img {
+.sponser_img {
   display: none;
 }
-.sponser:hover .img {
+.sponser:hover .sponser_img {
   display: block;
   position: absolute;
   top: 0px;
@@ -40,10 +40,10 @@
   background: #fff;
   border-radius: 10px;
 }
-.sponser:hover .title {
+.sponser:hover .sponser_alipay_title {
   color: #81a6ed;
 }
-.sponser:hover .alipay {
+.sponser:hover .sponser_alipay {
   width: 100px;
   height: 100px;
 }
