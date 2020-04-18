@@ -14,3 +14,35 @@
 .busuanzi-value {
   color: #2d96bd;
 }
+.sponser {
+  position: relative;
+  padding: 3px 25px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+.sponser .img {
+  display: none;
+}
+.sponser:hover .img {
+  display: block;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 150px;
+  height: 150px;
+  margin-top: -175px;
+  margin-left: -20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+}
+.sponser:hover .img .title {
+  color: rbg(20, 81, 122);
+}
+.sponser:hover .img .alipay {
+  width: 100px;
+  height: 100px;
+}
