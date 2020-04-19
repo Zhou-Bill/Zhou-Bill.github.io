@@ -306,12 +306,12 @@
         repo: 'Zhou-Bill.github.io',
         owner: 'Zhou-Bill',
         admin: 'Zhou-Bill',
-        id:  md5('location.pathname'),
+        id:  md5(location.pathname),
         labels: 'Gitalk'.split(',').filter(l => l),
-        perPage: parseInt('10'),
+        perPage: 10,
         pagerDirection: 'last',
-        createIssueManually: 'true',
-        distractionFreeMode: 'false'
+        createIssueManually: true,
+        distractionFreeMode: false
       })
       gitalk.render('gitalk-container')
 </script>
