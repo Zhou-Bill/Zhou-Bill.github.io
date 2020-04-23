@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>webpack+vue+electron开发环境搭建 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">webpack+vue+electron开发环境搭建</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 23, 2020&nbsp;&nbsp;10:05:49</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/electron/">electron</a>
+                            
+                                <a href="/categories/electron/vue/">vue</a>
+                            
+                                <a href="/categories/electron/vue/webpack/">webpack</a>
+                            
+                        </span>
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="设置electron-安装路径"><a href="#设置electron-安装路径" class="headerlink" title="设置electron 安装路径"></a>设置electron 安装路径</h2><p><code>npm set config ELECTRON_MIRROR=&quot;https://npm.taobao.org/mirrors/electron/&quot;</code></p>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>electron 分主进程和渲染进程，在这里，我们直接把主进程看成是<strong>创建主体窗口</strong>，而渲染进程看成是 <strong>页面的渲染</strong>。</p>
+<ul>
+<li>渲染进程当成一般的webpack配置即可， <code>vue-loader, less-loader, style-loader</code>等等照常配置即可,</li>
+<li>主进程： 主进程我们只当他是创建主体窗口的，那么我们只需要配置 <code>babel-loader</code>,</li>
+<li>当主进程发生改变时，那么就<strong>重启窗口</strong>， 简单来说就是直接使用 <code>electron .</code>这个命令， 但是我们使用nodejs 的方式启动</li>
+<li>当渲染进程文件发生改变时，我们的electron 也跟着刷新，那么就要使用<code>devServer + webpack-hot-middleware</code>, 但我觉得直接使用<code>devServer</code> 也没问题</li>
+<li>在主进程中要监听localhost的变化 <code>win.loadURL(&quot;http://localhost:9000&quot;)</code>,才能达到 实时更新</li>
+</ul>
+<h2 id="配置渲染进程"><a href="#配置渲染进程" class="headerlink" title="配置渲染进程"></a>配置渲染进程</h2><blockquote>
+<p>我们根据 <code>vue-cli</code> 目录文件去配，<code>vue-cli</code> </p>
+</blockquote>
+<p>渲染进程的目录路径：<code>src/render/</code> 目录下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">├─assets      <span class="comment">// 资源文件</span></span><br><span class="line">├─components  <span class="comment">// vue 组件</span></span><br><span class="line">├─pages       <span class="comment">// 路由页面</span></span><br><span class="line">├─App.vue     <span class="comment">// vue 主体文件</span></span><br><span class="line">├─index.js    <span class="comment">// 入口文件</span></span><br><span class="line">└─router.js   <span class="comment">// 路由文件，配置路由的</span></span><br></pre></td></tr></table></figure>
+
+<p>渲染进程webpack 配置： </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// configs/webpack.render.config.js</span></span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> HtmlWebpackPlugin = <span class="built_in">require</span>(<span class="string">'html-webpack-plugin'</span>);</span><br><span class="line"><span class="keyword">const</span> VueLoaderPlugin = <span class="built_in">require</span>(<span class="string">'vue-loader/lib/plugin'</span>);</span><br><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">'webpack'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// loader 自行npm install</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">    mode: <span class="string">'development'</span>,</span><br><span class="line">    entry: <span class="string">'./src/render/index.js'</span>,</span><br><span class="line">    devtool: <span class="string">'eval-source-map'</span>, </span><br><span class="line">    <span class="comment">// target: 'electron-renderer', // 加了反而报错</span></span><br><span class="line">    output: &#123;</span><br><span class="line">        filename: <span class="string">'[name].js'</span>,</span><br><span class="line">        path: path.resolve(__dirname, <span class="string">'../dist/render'</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="built_in">module</span>: &#123;</span><br><span class="line">        rules: [</span><br><span class="line">			<span class="comment">// babel-loader, less-loader 等等</span></span><br><span class="line">            &#123;</span><br><span class="line">                test: <span class="regexp">/\.vue$/</span>,  <span class="comment">// 编译vue</span></span><br><span class="line">                loader: <span class="string">'vue-loader'</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// ... 图片字体文件等等的文件配置</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    plugins: [</span><br><span class="line">        <span class="keyword">new</span> VueLoaderPlugin(), <span class="comment">// 编译vue</span></span><br><span class="line">        <span class="keyword">new</span> HtmlWebpackPlugin(&#123;<span class="attr">template</span>: path.resolve(__dirname, <span class="string">'../public/index.html'</span>)&#125;),</span><br><span class="line">        <span class="keyword">new</span> webpack.HotModuleReplacementPlugin()</span><br><span class="line">    ],</span><br><span class="line">    <span class="comment">// 往后devServer 会改成nodejs 的方式启动</span></span><br><span class="line">    devServer: &#123;</span><br><span class="line">        contentBase: path.resolve(__dirname, <span class="string">'../dist/render'</span>),</span><br><span class="line">        hot: <span class="literal">true</span>,</span><br><span class="line">        compress: <span class="literal">true</span>,</span><br><span class="line">        port: <span class="number">9000</span>,</span><br><span class="line">        open: <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要是执行命令<code>webpack-dev-server --config ./configs/webpack.dev.config.js</code> 没报错，那没渲染进程基本没问题了，另外我们往后 会把<strong>devServer 改成 nodejs的方式启动</strong></p>
+<h2 id="配置主进程"><a href="#配置主进程" class="headerlink" title="配置主进程"></a>配置主进程</h2><p>我们会把主进程的js 放入<code>src/main/</code>目录下， 但其实只有index.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">    entry:  <span class="string">'./src/main/index.js'</span>,</span><br><span class="line">    mode: <span class="string">'development'</span>,</span><br><span class="line">    output: &#123;</span><br><span class="line">        filename: <span class="string">'[name].js'</span>,</span><br><span class="line">        path: path.resolve(__dirname, <span class="string">"../dist/main"</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    target: <span class="string">'electron-main'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="用nodejs-的方式启动这些配置"><a href="#用nodejs-的方式启动这些配置" class="headerlink" title="用nodejs 的方式启动这些配置"></a>用nodejs 的方式启动这些配置</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 渲染进程</span></span><br><span class="line"><span class="comment">//https://webpack.docschina.org/guides/development</span></span><br><span class="line"><span class="comment">// 因为webpack-hot-middleware 只能检测到文件发生变化时重新加载，但不能刷新浏览器，所以我们加入 webpack-dev-server， 让浏览器自动刷新</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createRendererServer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="comment">// 直接添加 wenpack-hot-middleware/client.js, </span></span><br><span class="line">		rendererConfig.entry = [<span class="string">'webpack-hot-middleware/client?noInfo=true&amp;reload=true'</span>].concat(rendererConfig.entry);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">const</span> compiler = webpack(rendererConfig);</span><br><span class="line">		hotMiddleware = webpackHotMiddleware(compiler, &#123;</span><br><span class="line">			log: <span class="literal">false</span>,</span><br><span class="line">			heartbeat: <span class="number">2500</span></span><br><span class="line">		&#125;)</span><br><span class="line"></span><br><span class="line">		compiler.hooks.done.tap(<span class="string">'done'</span>, stats =&gt; &#123; <span class="built_in">console</span>.log(<span class="string">"完成"</span>);&#125;)</span><br><span class="line"></span><br><span class="line">		<span class="keyword">const</span> server = <span class="keyword">new</span> webpackDevServer(compiler, &#123;</span><br><span class="line">			contentBase: path.resolve(__dirname, <span class="string">'..'</span>),</span><br><span class="line">			quiet: <span class="literal">true</span>,</span><br><span class="line">			before (app, ctx) &#123;</span><br><span class="line">				<span class="comment">// express, 可获取 node 服务 app 实例，执行中间件操作</span></span><br><span class="line">				app.use(hotMiddleware)</span><br><span class="line">				ctx.middleware.waitUntilValid(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">					resolve()</span><br><span class="line">				&#125;)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line">		server.listen(<span class="number">9000</span>);</span><br><span class="line">	&#125;)</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 因为主进程的index.js 文件不常改，我们直接使用watch 的方式，监听文件变化，文件一变化，那么我们就重新启动electron</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createMainServer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="keyword">const</span> compiler = webpack(mainConfig);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 主进程监听文件变化， webpack watch 模式，那么就从起electron, 即调用electron .</span></span><br><span class="line">		compiler.watch(&#123;</span><br><span class="line">			aggregateTimeout: <span class="number">300</span>,</span><br><span class="line">			poll: <span class="number">1000</span></span><br><span class="line">		&#125;, (err, stats) =&gt; &#123;</span><br><span class="line">			<span class="keyword">if</span> (err) &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(err)</span><br><span class="line">				<span class="keyword">return</span></span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">if</span> (electronProcess &amp;&amp; electronProcess.kill) &#123;</span><br><span class="line">				manualRestart = <span class="literal">true</span></span><br><span class="line">				process.kill(electronProcess.pid)</span><br><span class="line">				electronProcess = <span class="literal">null</span></span><br><span class="line">				startElectron() <span class="comment">// 用 nodejs spawn的方式启动electron , 启动加载的js 应该是在 /dist/main/main.js ,该方法就不写了</span></span><br><span class="line">				setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">					manualRestart = <span class="literal">false</span></span><br><span class="line">				&#125;, <span class="number">5000</span>)</span><br><span class="line">			&#125;</span><br><span class="line">			resolve()</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们用<code>Promise.all([createRendererServer(), createMainServer()])</code> 这两个都编译好之后再启动electron <code>.then(() =&gt; startElectron())</code>;</p>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://i.loli.net/2020/04/23/YGbzdXaZVy2ARvi.gif" alt="bmoda-3cjoy.gif"></p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>浏览器打开<code>localhost:9000</code> 一样也可以，另外就是 nwjs 的开发环境也大致一样吧</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/electron/"># electron</a>
+                    
+                        <a href="/tags/vue/"># vue</a>
+                    
+                        <a href="/tags/webpack/"># webpack</a>
+                    
+                        
+                </span>
+            </div>
+            
+                
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <span class="sponser_alipay_title">支付宝</span>
+            <img src="/image/ali.png"  class="sponser_alipay" />
+        </div>
+    </div>
+
+
+            
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/04/15/%E9%95%BF%E5%88%97%E8%A1%A8%E5%AE%9E%E8%B7%B5/">长列表实践</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>
