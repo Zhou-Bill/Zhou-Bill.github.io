@@ -705,6 +705,16 @@ header label {
   margin: 0;
   padding-top: 0;
 }
+.tags-item a {
+  border: 1px solid #ccc;
+  padding: 5px 15px;
+  border-radius: 15px;
+  margin-right: 10px;
+}
+.tags-item a span {
+  margin-left: 5px;
+  color: #2d96bd;
+}
 .post-wrap p {
   font-size: 1em;
   margin: 1em 0 1em 0;
@@ -1378,34 +1388,56 @@ header label {
 }
 .sponser {
   position: relative;
-  padding: 3px 25px;
   border-radius: 15px;
   border: 1px solid #ccc;
   cursor: pointer;
 }
-.sponser_img {
-  display: none;
+.sponser .sponser_btn {
+  padding: 3px 25px;
+}
+.sponser .sponser_container {
+  display: flex;
+  flex-direction: column;
+}
+.sponser .sponser_container .sponser_header {
+  height: 40px;
+  line-height: 40px;
+  color: #999;
+  border-bottom: 1px solid #f3f3f3;
+  text-align: center;
+}
+.sponser .sponser_container .sponser_body {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+.sponser .sponser_container .sponser_body .alipay {
+  display: flex;
+  flex-direction: column;
+}
+.sponser .sponser_container .sponser_body .alipay .sponser_alipay_title {
+  color: #81a6ed;
+  text-align: center;
+}
+.sponser .sponser_container .sponser_body .alipay .sponser_alipay {
+  width: 150px;
+  height: 150px;
 }
 .sponser:hover .sponser_img {
   display: block;
   position: absolute;
   top: 0px;
   left: 0px;
-  width: 150px;
-  height: 150px;
-  margin-top: -175px;
-  margin-left: -20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  width: 460px;
+  height: 292px;
+  margin-top: -303px;
+  margin-left: -175px;
   background: #fff;
-  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-radius: 4px;
 }
-.sponser:hover .sponser_alipay_title {
-  color: #81a6ed;
-}
-.sponser:hover .sponser_alipay {
-  width: 100px;
-  height: 100px;
+.sponser_img {
+  display: none;
 }
