@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>Hello World | Chow Bill&#39;s Blog</title>
+<title>字符串解码 | Chow Bill&#39;s Blog</title>
 
 
 
@@ -212,7 +212,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Hello World</h1>
+            <h1 class="post-title">字符串解码</h1>
             
                 <div class="post-meta">
                     
@@ -221,7 +221,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">四月 8, 2020&nbsp;&nbsp;11:33:51</a>
+                        Date: <a href="#">五月 29, 2020&nbsp;&nbsp;10:25:49</a>
                         </span>
                     
                     
@@ -240,19 +240,26 @@
         </header>
 
         <div class="post-content">
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+            <p><a href="https://leetcode-cn.com/problems/decode-string/" target="_blank" rel="noopener">394. 字符串解码</a></p>
+<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>编码规则为：<code>k[encoded_string]</code>, 即中括号前表示<strong>重复的次数</strong>，中括号里面的是<strong>重复的字符串</strong></p>
+<p>例子：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">"3[a]2[bc]"</span>, 返回 <span class="string">"aaabcbc"</span>.</span><br><span class="line">s = <span class="string">"3[a2[c]]"</span>, 返回 <span class="string">"accaccacc"</span>.</span><br><span class="line">s = <span class="string">"2[abc]3[cd]ef"</span>, 返回 <span class="string">"abcabccdcdcdef"</span>.</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<h2 id="尝试"><a href="#尝试" class="headerlink" title="尝试"></a>尝试</h2><ul>
+<li>用栈的方式去解决问题</li>
+<li>用递归的方式</li>
+</ul>
+<h2 id="递归解决"><a href="#递归解决" class="headerlink" title="递归解决"></a>递归解决</h2><ul>
+<li>以<code>3[a2[c]]</code>为例子, 变量为<code>s</code></li>
+<li>遍历字符串<code>s</code>, </li>
+<li>如果是<code>数字</code>, <code>/\d/.test(s[i])</code>, <code>i++</code>,</li>
+<li>如果直接是<code>字母</code>,那直接往后扫, <code>i++</code></li>
+<li>遇到<code>[</code>进入递归</li>
+<li>遇到<code>]</code>结束递归，同时返回<code>[encode_string]</code>中括号里面的内容, 同时返回当前<code>index</code>，即当前<code>]</code>在<code>s[]</code>中第几位 </li>
+<li>将<strong>第6步</strong>返回的值和<strong>第3步</strong>的重复次数，做个for循环就好了</li>
+</ul>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> decodeString = <span class="function"><span class="keyword">function</span>(<span class="params">s</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> res = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">const</span> sub = generate(s, <span class="number">0</span>);</span><br><span class="line">    res += sub.sub;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 3[a2[c]]</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">generate</span>(<span class="params">string, start</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> index = start;</span><br><span class="line">    <span class="keyword">let</span> temp = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">let</span> tempNum = <span class="string">""</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(index &lt; string.length) &#123;</span><br><span class="line">        <span class="keyword">const</span> current = string[index];</span><br><span class="line">        <span class="keyword">if</span>(current == <span class="string">"["</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> sub = generate(string, index + <span class="number">1</span> );</span><br><span class="line">            <span class="keyword">let</span> res = <span class="string">""</span>;</span><br><span class="line">            index = (sub.index)</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span> ; i &lt; tempNum ; i++) &#123;</span><br><span class="line">                res += sub.sub</span><br><span class="line">            &#125;</span><br><span class="line">            temp += res;</span><br><span class="line">            tempNum = <span class="string">""</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(current == <span class="string">"]"</span>) &#123;</span><br><span class="line">            <span class="keyword">let</span> res = temp;</span><br><span class="line">            <span class="keyword">return</span> &#123;<span class="attr">index</span>: index + <span class="number">1</span>, <span class="attr">sub</span>: res&#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(<span class="regexp">/\d/</span>.test(current)) &#123;</span><br><span class="line">            tempNum += current</span><br><span class="line">            index++;</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            temp += current</span><br><span class="line">            index++</span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="attr">index</span>: index, <span class="attr">sub</span>: temp&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 
         </div>
 
@@ -270,6 +277,10 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="/tags/algorithm-%E9%80%92%E5%BD%92/"># 递归</a>
+                    
+                        
                 </span>
             </div>
             
@@ -302,8 +313,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2020/04/08/%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E4%BD%BF%E7%BD%91%E7%AB%99%E5%8F%98%E7%81%B0/">一行代码使网站变灰</a>
+                <a class="prev" rel="prev" href="/2020/05/29/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/">打家劫舍</a>
             
+            
+            <a class="next" rel="next" href="/2020/05/27/%E5%92%8C%E4%B8%BAk%E7%9A%84%E5%AD%90%E6%95%B0%E7%BB%84/">和为k的子数组</a>
             
         </section>
 

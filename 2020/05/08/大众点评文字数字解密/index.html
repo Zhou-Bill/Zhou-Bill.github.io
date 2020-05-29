@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>大众点评文字数字解密 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">大众点评文字数字解密</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">五月 8, 2020&nbsp;&nbsp;10:54:10</a>
+                        </span>
+                    
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>百度发现大众点评网上面的文字数字加密是通过字体文件加密的，也就是说用css 的class 用不同的类对应的字体文件，再加下面的特殊字符跟字体文件上面的编码一一对应起来</p>
+<h2 id="先看一下大众点评吧"><a href="#先看一下大众点评吧" class="headerlink" title="先看一下大众点评吧"></a>先看一下大众点评吧</h2><p><img src="https://i.loli.net/2020/05/08/emBOdhVyIK4TA8v.png" alt="1588908462_1_.jpg"></p>
+<p>我们从上图可以看到，大众点评的地址是加密的，所以我们不能直接从html中获取</p>
+<h2 id="发现"><a href="#发现" class="headerlink" title="发现"></a>发现</h2><p>发现上图 <code>.num</code> 类和 <code>.address</code> 类用的 <code>ba****.css</code>, 打开此css发现这些类使用的字体文件都是不同的，看下图：</p>
+<p><img src="https://i.loli.net/2020/05/08/7VHbsvjQtkfDgal.png" alt="1588919508_1_.jpg"></p>
+<blockquote>
+<p>我们可以下载FontCreator 打开上图链接的.woff, 或者用百度的FontEditor(之前可以用，后来不行了)</p>
+</blockquote>
+<p><img src="https://i.loli.net/2020/05/08/AbBZvV9gKpExaFW.png" alt="1588921914_1_.jpg"></p>
+<p>我们用<code>北</code>做例子，在大众点评上加密的字符是 <code></code>, 我们发现.woff 文件用forntCreator 上面的16进制码是 <code>efa8</code>, </p>
+<h2 id="js-解析字体文件工具-fonteditor-core"><a href="#js-解析字体文件工具-fonteditor-core" class="headerlink" title="js 解析字体文件工具 fonteditor-core"></a>js 解析字体文件工具 fonteditor-core</h2><p>它会把.woff 文件中某个 字体转成十进制然后一一对应起来</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Font = <span class="built_in">require</span>(<span class="string">'fonteditor-core'</span>).Font;</span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">var</span> buffer = fs.readFileSync(<span class="string">'4.woff'</span>);</span><br><span class="line"><span class="comment">// 不加这个文件会报错  </span></span><br><span class="line"><span class="comment">// https://cdn.bootcdn.net/ajax/libs/pako/1.0.10/pako_inflate.min.js</span></span><br><span class="line"><span class="keyword">let</span> inflate_daddy = <span class="built_in">require</span>(<span class="string">"./pako_inflate.min"</span>); </span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> font = Font.create(buffer, &#123;</span><br><span class="line">    type: <span class="string">'woff'</span>, <span class="comment">// support ttf,woff,eot,otf,svg</span></span><br><span class="line">    inflate: inflate_daddy.inflate</span><br><span class="line">&#125;);</span><br><span class="line"><span class="built_in">console</span>.log(font.data.cmap);</span><br><span class="line"></span><br><span class="line"><span class="comment">// font.data.cmap </span></span><br><span class="line"><span class="comment">// key值代表十进制, value代表的是第几个字体</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="string">'120'</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">'57346'</span>: <span class="number">81</span>,</span><br><span class="line">    <span class="string">'57348'</span>: <span class="number">275</span>,</span><br><span class="line">    ...</span><br><span class="line">    <span class="string">'61352'</span>: <span class="number">125</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面<code>北</code>字为例，加密字符 <code></code>,转成十进制就是 <code>61352</code> 也就是在.woff 文件第<code>125</code>个字,但机器是不知道上面第125个字是什么字，所以我们做一个.woff文件的所有字体人工抽取出来然后一一对应就好了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">woffString = <span class="string">`</span></span><br><span class="line"><span class="string">    1234567890店中美家馆</span></span><br><span class="line"><span class="string">    小车大市公酒行国品发电金心业商司</span></span><br><span class="line"><span class="string">    超生装园场食有新限天面工服海华水</span></span><br><span class="line"><span class="string">    房饰城乐汽香部利子老艺花专东肉菜</span></span><br><span class="line"><span class="string">    学福饭人百餐茶务通味所山区门药银</span></span><br><span class="line"><span class="string">    农龙停尚安广鑫一容动南具源兴鲜记</span></span><br><span class="line"><span class="string">    时机烤文康信果阳理锅宝达地儿衣特</span></span><br><span class="line"><span class="string">    产西批坊州牛佳化五米修爱北养卖建</span></span><br><span class="line"><span class="string">    材三会鸡室红站德王光名丽油院堂烧</span></span><br><span class="line"><span class="string">    江社合星货型村自科快便日民营和活</span></span><br><span class="line"><span class="string">    童明器烟育宾精屋经居庄石顺林尔县</span></span><br><span class="line"><span class="string">    手厅销用好客火雅盛体旅之鞋辣作粉</span></span><br><span class="line"><span class="string">    包楼校鱼平彩上吧保永万物教吃设医</span></span><br><span class="line"><span class="string">    正造丰健点汤网庆技斯洗料配汇木缘</span></span><br><span class="line"><span class="string">    加麻联卫川泰色世方寓风幼羊烫来高</span></span><br><span class="line"><span class="string">    厂兰阿贝皮全女拉成云维贸道术运都</span></span><br><span class="line"><span class="string">    口博河瑞宏京际路祥青镇厨培力惠连</span></span><br><span class="line"><span class="string">    马鸿钢训影甲助窗布富牌头四多妆吉</span></span><br><span class="line"><span class="string">    苑沙恒隆春干饼氏里二管诚制售嘉长</span></span><br><span class="line"><span class="string">    轩杂副清计黄讯太鸭号街交与叉附近</span></span><br><span class="line"><span class="string">    层旁对巷栋环省桥湖段乡厦府铺内侧</span></span><br><span class="line"><span class="string">    元购前幢滨处向座下臬凤港开关景泉</span></span><br><span class="line"><span class="string">    塘放昌线湾政步宁解白田町溪十八古</span></span><br><span class="line"><span class="string">    双胜本单同九迎第台玉锦底后七斜期</span></span><br><span class="line"><span class="string">    武岭松角纪朝峰六振珠局岗洲横边济</span></span><br><span class="line"><span class="string">    井办汉代临弄团外塔杨铁浦字年岛陵</span></span><br><span class="line"><span class="string">    原梅进荣友虹央桂沿事津凯莲丁秀柳</span></span><br><span class="line"><span class="string">    集紫旗张谷的是不了很还个也这我就</span></span><br><span class="line"><span class="string">    在以可到错没去过感次要比觉看得说</span></span><br><span class="line"><span class="string">    常真们但最喜哈么别位能较境非为欢</span></span><br><span class="line"><span class="string">    然他挺着价那意种想出员两推做排实</span></span><br><span class="line"><span class="string">    分间甜度起满给热完格荐喝等其再几</span></span><br><span class="line"><span class="string">    只现朋候样直而买于般豆量选奶打每</span></span><br><span class="line"><span class="string">    评少算又因情找些份置适什蛋师气你</span></span><br><span class="line"><span class="string">    姐棒试总定啊足级整带虾如态且尝主</span></span><br><span class="line"><span class="string">    话强当更板知己无酸让入啦式笑赞片</span></span><br><span class="line"><span class="string">    酱差像提队走嫩才刚午接重串回晚微</span></span><br><span class="line"><span class="string">    周值费性桌拍跟块调糕</span></span><br><span class="line"><span class="string">    `</span></span><br></pre></td></tr></table></figure>
+
+<p>以上获取<code>北</code>字 就是 <code>woffString[font.data.cmap[&#39;61352&#39;]] =&gt; woffString[125]</code></p>
+<h2 id="字符串转进制"><a href="#字符串转进制" class="headerlink" title="字符串转进制"></a>字符串转进制</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">stringToEntity</span>(<span class="params">str, radix = <span class="number">10</span></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> arr = str.split(<span class="string">''</span>)</span><br><span class="line">    <span class="keyword">let</span> tmp = arr.map(<span class="function"><span class="params">item</span> =&gt;</span> item.charCodeAt(<span class="number">0</span>).toString(radix) ).join(<span class="string">''</span>);</span><br><span class="line">    <span class="comment">// console.log(`'$&#123;str&#125;' 转实体为 '$&#123;tmp&#125;'`)</span></span><br><span class="line">    <span class="keyword">return</span> tmp</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上就是解密全过程</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/js/"># js</a>
+                    
+                        
+                </span>
+            </div>
+            
+                
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+            
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/05/19/%E9%AA%8C%E8%AF%81%E5%9B%9E%E6%96%87%E5%AD%97%E7%AC%A6%E4%B8%B2%20%E2%85%A1/">验证回文字符串 Ⅱ</a>
+            
+            
+            <a class="next" rel="next" href="/2020/04/23/webpack-vue-electron%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">webpack+vue+electron开发环境搭建</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

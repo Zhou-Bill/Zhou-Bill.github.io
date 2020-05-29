@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>Hello World | Chow Bill&#39;s Blog</title>
+<title>验证回文字符串 Ⅱ | Chow Bill&#39;s Blog</title>
 
 
 
@@ -212,7 +212,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Hello World</h1>
+            <h1 class="post-title">验证回文字符串 Ⅱ</h1>
             
                 <div class="post-meta">
                     
@@ -221,7 +221,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">四月 8, 2020&nbsp;&nbsp;11:33:51</a>
+                        Date: <a href="#">五月 19, 2020&nbsp;&nbsp;17:13:34</a>
                         </span>
                     
                     
@@ -240,19 +240,18 @@
         </header>
 
         <div class="post-content">
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+            <h2 id="验证回文字符串-Ⅱ"><a href="#验证回文字符串-Ⅱ" class="headerlink" title="验证回文字符串 Ⅱ"></a>验证回文字符串 Ⅱ</h2><p><a href="https://leetcode-cn.com/problems/valid-palindrome-ii/" target="_blank" rel="noopener">力扣上第680题</a></p>
+<h2 id="核心思想"><a href="#核心思想" class="headerlink" title="核心思想"></a>核心思想</h2><p>使用双指针，即使用前后两个指针，同时对前指针和后指针的值做对比，要是相同，那么前指针向后移动，后指针向前移动<br><strong>但这道题说可以删除一个字符</strong>, 那么当我们遇到不相等的值的时候，只要前指针向后移动，或者后指针向前移动，然后剩下的做对比即可</p>
+<ul>
+<li>终止条件为： <strong>前指针 比 后指针要大，或者说是前指针后于后指针</strong></li>
+</ul>
+<h2 id="解释"><a href="#解释" class="headerlink" title="解释"></a>解释</h2><p><img src="https://i.loli.net/2020/05/25/6pKX9EhsoyrkPIH.png" alt="1590400698_1_.jpg"></p>
+<p>上图，我们只要判断左指针和右指针的值是否相等，直到终止条件，要是全部都相同，那么就是回文了</p>
+<p><strong>但这题说可以删除一个字母，那么等字符不相等的时候，左指针向后移动或者右指针向前移动，将剩下的再做一次回文即可</strong>，看下图</p>
+<p><img src="https://i.loli.net/2020/05/25/zlvfcQJZxUYy1hW.png" alt="1590400906_1_.jpg"></p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// "ebcbb ececabbacec bbcbe"</span></span><br><span class="line"><span class="comment">// "ebcbb cecabbacece bbcbe"</span></span><br><span class="line"><span class="keyword">var</span> validPalindrome = <span class="function"><span class="keyword">function</span>(<span class="params">s</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> left = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> right = s.length - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">let</span> flag = <span class="literal">false</span>; <span class="comment">// 标志位 表示要是遇到一个前指针与后指针不相同的值, 退出循环。</span></span><br><span class="line">    <span class="keyword">while</span>(left &lt; right) &#123;</span><br><span class="line">        <span class="keyword">const</span> leftTemp = s[left];</span><br><span class="line">        <span class="keyword">const</span> rightTemp = s[right];</span><br><span class="line">        <span class="keyword">if</span>(leftTemp == rightTemp) &#123;</span><br><span class="line">            left++;</span><br><span class="line">            right--;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            flag = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">if</span>(flag &gt;= <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> tempString = s.slice(left + <span class="number">1</span>, right + <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> validChilren(left+<span class="number">1</span>, right, s) || validChilren(left, right - <span class="number">1</span>, s);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">validChilren</span>(<span class="params">left, right, s</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(left &lt; right) &#123;</span><br><span class="line">        <span class="keyword">const</span> leftTemp = s[left];</span><br><span class="line">        <span class="keyword">const</span> rightTemp = s[right];</span><br><span class="line">        <span class="keyword">if</span>(leftTemp == rightTemp) &#123;</span><br><span class="line">            left++;</span><br><span class="line">            right--;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
 
         </div>
 
@@ -270,6 +269,10 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="/tags/algorithm-%E5%9F%BA%E7%A1%80/"># 基础</a>
+                    
+                        
                 </span>
             </div>
             
@@ -302,8 +305,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2020/04/08/%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E4%BD%BF%E7%BD%91%E7%AB%99%E5%8F%98%E7%81%B0/">一行代码使网站变灰</a>
+                <a class="prev" rel="prev" href="/2020/05/27/%E5%92%8C%E4%B8%BAk%E7%9A%84%E5%AD%90%E6%95%B0%E7%BB%84/">和为k的子数组</a>
             
+            
+            <a class="next" rel="next" href="/2020/05/08/%E5%A4%A7%E4%BC%97%E7%82%B9%E8%AF%84%E6%96%87%E5%AD%97%E6%95%B0%E5%AD%97%E8%A7%A3%E5%AF%86/">大众点评文字数字解密</a>
             
         </section>
 
