@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>面试题29. 顺时针打印矩阵 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+<body>
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">面试题29. 顺时针打印矩阵</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">六月 6, 2020&nbsp;&nbsp;11:24:32</a>
+                        </span>
+                    
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><a href="https://leetcode-cn.com/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/" target="_blank" rel="noopener">面试题29.顺时针打印矩阵</a></p>
+<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>输入一个矩阵，按照从外向里以顺时针的顺序依次打印出每一个数字。</p>
+<p>示例 1：</p>
+<blockquote>
+<p>输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]<br>输出：[1,2,3,6,9,8,7,4,5]</p>
+</blockquote>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>示例1：</p>
+<table>
+<thead>
+<tr>
+<th align="center">i/j</th>
+<th align="center">j = 0</th>
+<th align="center">j = 1</th>
+<th align="center">j = 2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">i = 0</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">3</td>
+</tr>
+<tr>
+<td align="center">i = 1</td>
+<td align="center">4</td>
+<td align="center">5</td>
+<td align="center">6</td>
+</tr>
+<tr>
+<td align="center">i = 2</td>
+<td align="center">7</td>
+<td align="center">8</td>
+<td align="center">9</td>
+</tr>
+<tr>
+<td align="center">i = 3</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">12</td>
+</tr>
+</tbody></table>
+<p>示例2：</p>
+<table>
+<thead>
+<tr>
+<th align="center">i/j</th>
+<th align="center">j = 0</th>
+<th align="center">j = 1</th>
+<th align="center">j = 2</th>
+<th align="center">j = 3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">i = 0</td>
+<td align="center">1</td>
+<td align="center">2</td>
+<td align="center">3</td>
+<td align="center">4</td>
+</tr>
+<tr>
+<td align="center">i = 1</td>
+<td align="center">5</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">8</td>
+</tr>
+<tr>
+<td align="center">i = 2</td>
+<td align="center">9</td>
+<td align="center">10</td>
+<td align="center">11</td>
+<td align="center">12</td>
+</tr>
+<tr>
+<td align="center">i = 3</td>
+<td align="center">13</td>
+<td align="center">14</td>
+<td align="center">15</td>
+<td align="center">16</td>
+</tr>
+</tbody></table>
+<p>可以看一下结果，题目说是顺时针打印，可以想象一下 <code>i</code> 跟 <code>j</code> 的变化</p>
+<ul>
+<li>循环遍历</li>
+<li>结束条件是： 当结果数组的长度 == <code>matrix</code>数组的<em>高</em> * <em>宽</em>， 即所有子集都遍历过了</li>
+<li>再来分析一下边界问题, 分析一下 <code>i</code>, <code>j</code> 的变化， 这里以 <em>*示例2</em> 为例子<ol>
+<li>开始： 向右走， 那么 <code>j++</code>，<code>i</code>不变， 到 <code>j == 3</code>的时候向下， 所以这里要考虑右边的边界问题</li>
+<li>向下走： 那么 <code>i++</code>, <code>j</code> 不变，到 <code>i == 3</code>的时候向左， 所以考虑下边界问题</li>
+<li>向左走： 那么 <code>j--</code>, <code>i</code> 不变，到 <code>i == 0</code>的时候向上，所以考虑左边界问题</li>
+<li>向上走： 那么 <code>i--</code>, <code>j</code> 不变，到 <code>i == 1</code>的时候再一次重复， <code>1,2,3,4</code>这四步， 但这里要考虑上边界的问题</li>
+</ol>
+</li>
+</ul>
+<p>我这里用 <code>direction</code>表示方向， <code>1 =&gt; 向右， 2 =&gt; 向下， 3 =&gt; 向左， 4 =》 向上</code></p>
+<p>这时候就是想什么时候得到边界，在边界的时候改变方向，所以有</p>
+<ul>
+<li><p>先设置边界 <code>left = 0, right = colums - 1, up = 0, down = rows - 1</code>, 这里表示左右上下的边界，我们只要操作这个边界就可以了<br>另外<code>rows</code>表示有多少行，<code>colums</code>表示有多少列</p>
+</li>
+<li><p><code>i == up &amp;&amp; j == left</code>, 我们可以看 <code>i == 0, j == 0</code>的时候，这时候就是<strong>向右走</strong></p>
+</li>
+<li><p><code>i == up &amp;&amp; j == right</code>, 这时候就是 <code>i == 0， j == 3</code>的时候，那么我们就改变方向，<strong>向下走</strong></p>
+</li>
+<li><p><code>i == down &amp;&amp; j == right</code>, 这时候就是 <code>i == 3, j == 3</code>，那么又改变方向，<strong>向左走</strong></p>
+</li>
+<li><p><code>i == down &amp;&amp; j == left</code>, 这时候就是 <code>i == 3, j == 0</code>, 又改变方向，<strong>向上走</strong></p>
+</li>
+<li><p><strong>注意：</strong> 此时向上走之后，等 <code>i == up + 1 &amp;&amp; j == left</code>, 即 <code>i == 1, j ==0</code>, 即<strong>5</strong>这个地方，那么就<strong>向右走</strong>，同时，<code>更改边界</code>, <code>left++, right--, up++, down--</code> 再重复上面的事情</p>
+</li>
+<li><p>整个过程是： </p>
+<ol>
+<li><code>1 =&gt; 2 =&gt; 3 =&gt; 4 =&gt; 8 =&gt; 12 =&gt; 16 =&gt; 15 =&gt; 14 =&gt; 13 =&gt; 9 =&gt; 5</code> 这是一圈</li>
+<li><code>6 =&gt; 7 =&gt; 11 =&gt; 10</code> 这又是一圈</li>
+</ol>
+</li>
+<li><p>当<code>输入的matrix = [[1],[2],[3]]</code>就只有一列的时候， 另外看<code>示例1</code>, 走完外圈，剩下内圈，只剩下 <code>5,8</code>这两个元素的时候也向下走，所以总结 <code>left == right</code>的时候，<code>direction = 2, i++</code></p>
+</li>
+</ul>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> spiralOrder = <span class="function"><span class="keyword">function</span>(<span class="params">matrix</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> rows = matrix.length;</span><br><span class="line">    <span class="keyword">let</span> result = [];</span><br><span class="line">    <span class="keyword">if</span>(rows == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> columns = matrix[<span class="number">0</span>].length;</span><br><span class="line">    <span class="keyword">let</span> count = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> j = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> direction = <span class="number">1</span>;  <span class="comment">// 1 =&gt; 向右 2 =&gt; 向下 3=&gt; 向左 4 =&gt; 向上</span></span><br><span class="line">    <span class="keyword">let</span> left = <span class="number">0</span>;        <span class="comment">// 左边界</span></span><br><span class="line">    <span class="keyword">let</span> right = columns - <span class="number">1</span>;  <span class="comment">// 右边界</span></span><br><span class="line">    <span class="keyword">let</span> up = <span class="number">0</span>; </span><br><span class="line">    <span class="keyword">let</span> down =  rows - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(count &lt; rows * columns) &#123;</span><br><span class="line">        <span class="keyword">const</span> current = matrix[i][j];</span><br><span class="line">        result.push(current);</span><br><span class="line">        count++;</span><br><span class="line">        <span class="keyword">if</span>(left == right) &#123;  <span class="comment">// 当剩下的元素只有一列的时候，只能向下走了</span></span><br><span class="line">            direction = <span class="number">2</span>;</span><br><span class="line">            i++;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(i == up &amp;&amp; j == left) &#123;   <span class="comment">// 拐点向右</span></span><br><span class="line">            direction = <span class="number">1</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i == up &amp;&amp; j == right) &#123;  <span class="comment">// 拐点向下</span></span><br><span class="line">            direction = <span class="number">2</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i == down &amp;&amp; j == right) &#123; <span class="comment">// 拐点向左</span></span><br><span class="line">            direction = <span class="number">3</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(i == down &amp;&amp; j == left) &#123; <span class="comment">// 拐点向上</span></span><br><span class="line">            direction = <span class="number">4</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span>(i == up + <span class="number">1</span> &amp;&amp; j == left) &#123;</span><br><span class="line">            <span class="comment">// 完成一圈后，重设定边界</span></span><br><span class="line">            left = left + <span class="number">1</span>;</span><br><span class="line">            right = right - <span class="number">1</span>;</span><br><span class="line">            up = up + <span class="number">1</span>;</span><br><span class="line">            down = down - <span class="number">1</span>;</span><br><span class="line">            direction = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据边界，改变i, j的值</span></span><br><span class="line">        <span class="keyword">if</span>(direction == <span class="number">1</span>) &#123;</span><br><span class="line">            j++;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(direction == <span class="number">2</span>) &#123;</span><br><span class="line">            i++;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span>(direction == <span class="number">3</span>) &#123;</span><br><span class="line">            j--;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            i--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/algorithm-%E5%9F%BA%E7%A1%80/"># 基础</a>
+                    
+                        <a href="/tags/algorithm-%E6%95%B0%E7%BB%84/"># 数组</a>
+                    
+                        
+                </span>
+            </div>
+            
+                
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+            
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/06/05/%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BE%E6%BB%91%E5%8A%A8%E9%AA%8C%E8%AF%81/">高德地图滑动验证</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div>
+</body>
+</html>

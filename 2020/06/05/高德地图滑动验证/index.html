@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>打家劫舍 | Chow Bill&#39;s Blog</title>
+<title>高德地图滑动验证 | Chow Bill&#39;s Blog</title>
 
 
 
@@ -212,7 +212,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">打家劫舍</h1>
+            <h1 class="post-title">高德地图滑动验证</h1>
             
                 <div class="post-meta">
                     
@@ -221,9 +221,16 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">五月 29, 2020&nbsp;&nbsp;23:45:17</a>
+                        Date: <a href="#">六月 5, 2020&nbsp;&nbsp;17:34:27</a>
                         </span>
                     
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/js/">js</a>
+                            
+                        </span>
                     
                     
                         <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -240,21 +247,11 @@
         </header>
 
         <div class="post-content">
-            <p><a href="https://leetcode-cn.com/problems/house-robber/" target="_blank" rel="noopener">198. 打家劫舍</a></p>
-<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。</p>
-<p>给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入: [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">1</span>]</span><br><span class="line">输出: <span class="number">4</span></span><br><span class="line">解释: 偷窃 <span class="number">1</span> 号房屋 (金额 = <span class="number">1</span>) ，然后偷窃 <span class="number">3</span> 号房屋 (金额 = <span class="number">3</span>)。</span><br><span class="line">     偷窃到的最高金额 = <span class="number">1</span> + <span class="number">3</span> = <span class="number">4</span> 。</span><br></pre></td></tr></table></figure>
-
-<h2 id="尝试"><a href="#尝试" class="headerlink" title="尝试"></a>尝试</h2><ul>
-<li>一开始以为是 <code>i奇数</code>的值相加，与<code>偶数</code>的值相加，最后比最大值，提交发现是错误的</li>
-<li>然后一想就知道是一位数组的动态规划</li>
+            <h2 id="高德地图滑动验证"><a href="#高德地图滑动验证" class="headerlink" title="高德地图滑动验证"></a>高德地图滑动验证</h2><ul>
+<li>用dispatch 模拟dom的mousedown, mousemove，还有mouseUp 事件</li>
+<li>再用 <code>setInterval</code> 执行<code>mouseMove</code>事件即可</li>
 </ul>
-<h2 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h2><ul>
-<li>定义数组含义： <code>dp[i]</code> 设定第i房间时，所偷的钱为最大</li>
-<li>找出数组元素间的关系式 =&gt; 递推公式。 题目规定：小偷不能连续偷窃相邻的房子，至少隔一个房间，<br>那么当我偷到第i房间的时候，我只要求出第i-2房间时跟第i-3房间时的最大值即可，<code>i-2</code>表示隔了一间房间， <code>i-3</code>表示隔了2个房间<br>所以递推公式为 <code>dp[i] = nums[i] + Math.max(dp[i - 3], dp[i - 2])</code></li>
-<li>找出初始条件： 第0间自然是<code>nums[0]</code>, 但我们递推公式 <code>i-3</code>和<code>i-2</code> 理论上没有非正整数的房间，我们手动输入为0吧</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> rob = <span class="function"><span class="keyword">function</span>(<span class="params">nums</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// dp[i] = nums[i] + Max(dp[i-3], dp[i-2]) </span></span><br><span class="line">    <span class="keyword">let</span> dp = <span class="keyword">new</span> <span class="built_in">Map</span>();</span><br><span class="line">    dp[<span class="number">0</span>] = nums[<span class="number">0</span>];</span><br><span class="line">    dp[<span class="number">-1</span>] = <span class="number">0</span>;</span><br><span class="line">    dp[<span class="number">-2</span>] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// dp(1) = nums[1] + max(dp(1-3), dp[1-2])</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">1</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">        dp[i] = nums[i] + <span class="built_in">Math</span>.max(dp[i<span class="number">-3</span>], dp[i<span class="number">-2</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">        result = <span class="built_in">Math</span>.max(result, dp[i]);      </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">sliderYzm</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">"mockVerify"</span>);</span><br><span class="line">    <span class="keyword">const</span> iframe = <span class="built_in">document</span>.getElementById(<span class="string">"sufei-dialog-content"</span>);</span><br><span class="line">    <span class="keyword">const</span> btn = iframe.contentWindow.document.getElementById(<span class="string">"nc_1_n1z"</span>);</span><br><span class="line">    <span class="keyword">const</span> mousedown = <span class="built_in">document</span>.createEvent(<span class="string">"MouseEvents"</span>);</span><br><span class="line">    <span class="keyword">const</span> rect = btn.getBoundingClientRect();</span><br><span class="line">    <span class="keyword">var</span> x = rect.x;</span><br><span class="line">    <span class="keyword">var</span> y = rect.y;</span><br><span class="line">    mousedown.initMouseEvent(<span class="string">"mousedown"</span>,<span class="literal">true</span>,<span class="literal">true</span>,<span class="built_in">window</span>,<span class="number">0</span>,  </span><br><span class="line">            x, y, x, y,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="number">0</span>,<span class="literal">null</span>);</span><br><span class="line">    btn.dispatchEvent(mousedown);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> dx = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">const</span>  interval = setInterval(<span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">            <span class="keyword">const</span> mousemove = <span class="built_in">document</span>.createEvent(<span class="string">"MouseEvents"</span>);</span><br><span class="line">            <span class="keyword">const</span> _x = x + dx;</span><br><span class="line">            mousemove.initMouseEvent(<span class="string">"mousemove"</span>,<span class="literal">true</span>,<span class="literal">true</span>,<span class="built_in">window</span>,<span class="number">0</span>,  </span><br><span class="line">                    _x, y, _x, y,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="number">0</span>,<span class="literal">null</span>);</span><br><span class="line">            btn.dispatchEvent(mousemove);</span><br><span class="line">            </span><br><span class="line">            btn.dispatchEvent(mousemove);</span><br><span class="line">            <span class="keyword">if</span>(_x - x &gt;= <span class="number">300</span>)&#123;</span><br><span class="line">                clearInterval(interval);</span><br><span class="line">                <span class="keyword">const</span> mouseup = <span class="built_in">document</span>.createEvent(<span class="string">"MouseEvents"</span>);</span><br><span class="line">                mouseup.initMouseEvent(<span class="string">"mouseup"</span>,<span class="literal">true</span>,<span class="literal">true</span>,<span class="built_in">window</span>,<span class="number">0</span>,  </span><br><span class="line">                _x, y, _x, y,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="literal">false</span>,<span class="number">0</span>,<span class="literal">null</span>);</span><br><span class="line">                btn.dispatchEvent(mouseup);</span><br><span class="line">                </span><br><span class="line">                <span class="keyword">let</span> verifyOk = setInterval(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span>(btn.className.indexOf(<span class="string">'btn_ok'</span>) &gt; <span class="number">-1</span>)&#123;</span><br><span class="line">                        <span class="built_in">console</span>.log(btn.className);</span><br><span class="line">                        clearInterval(verifyOk);</span><br><span class="line">                        resolve();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;, <span class="number">1200</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                dx += <span class="built_in">Math</span>.ceil(<span class="built_in">Math</span>.random() * <span class="number">50</span>);</span><br><span class="line">                <span class="built_in">console</span>.log(dx);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="number">40</span>);</span><br><span class="line">    &#125;)</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
         </div>
 
@@ -273,7 +270,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/algorithm-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/"># 动态规划</a>
+                        <a href="/tags/js/"># js</a>
                     
                         
                 </span>
@@ -308,10 +305,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2020/06/01/%E5%8E%9F%E5%9E%8B%E4%B8%8E%E7%BB%A7%E6%89%BF/">原型与继承</a>
+                <a class="prev" rel="prev" href="/2020/06/06/%E9%9D%A2%E8%AF%95%E9%A2%9829-%E9%A1%BA%E6%97%B6%E9%92%88%E6%89%93%E5%8D%B0%E7%9F%A9%E9%98%B5/">面试题29. 顺时针打印矩阵</a>
             
             
-            <a class="next" rel="next" href="/2020/05/29/%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%A7%A3%E7%A0%81/">字符串解码</a>
+            <a class="next" rel="next" href="/2020/06/03/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%B8%8Breact%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E6%B3%95/">记录一下react的一些用法</a>
             
         </section>
 

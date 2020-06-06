@@ -705,13 +705,20 @@ header label {
   margin: 0;
   padding-top: 0;
 }
-.tags-item a {
+.tags-algorihm {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.tags-algorihm .tags-item {
   border: 1px solid #ccc;
   padding: 5px 15px;
-  border-radius: 15px;
-  margin-right: 10px;
+  border-radius: 20px;
+  margin-right: 15px;
+  margin-bottom: 15px;
 }
-.tags-item a span {
+.tags-algorihm .tags-item .nums {
   margin-left: 5px;
   color: #2d96bd;
 }
