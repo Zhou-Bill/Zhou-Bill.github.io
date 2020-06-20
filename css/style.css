@@ -705,20 +705,20 @@ header label {
   margin: 0;
   padding-top: 0;
 }
-.tags-algorihm {
+.tags-algorithm {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   flex-wrap: wrap;
 }
-.tags-algorihm .tags-item {
+.tags-algorithm .tags-item {
   border: 1px solid #ccc;
   padding: 5px 15px;
   border-radius: 20px;
   margin-right: 15px;
   margin-bottom: 15px;
 }
-.tags-algorihm .tags-item .nums {
+.tags-algorithm .tags-item .nums {
   margin-left: 5px;
   color: #2d96bd;
 }
