@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>Hexo自定义案例 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+
+    
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Hexo自定义案例</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">七月 9, 2020&nbsp;&nbsp;14:54:57</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/hexo/">hexo</a>
+                            
+                        </span>
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>我使用的主题是<a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank" rel="noopener">chic</a></p>
+<h2 id="修改主题markdown的高亮代码"><a href="#修改主题markdown的高亮代码" class="headerlink" title="修改主题markdown的高亮代码"></a>修改主题markdown的高亮代码</h2><p>我当前使用的主题是不支持<code>jsx</code>的，所以对于<code>react</code>代码不能友好支持。所以使用<code>hexo-prism-plugin</code>修改了高亮部分</p>
+<ul>
+<li><code>坑:</code> 我安装了 <code>hexo-prism-plugin</code> 之后发现还是无法高亮 <code>jsx</code> 代码， 后来发现还要要安装 <code>hexo-inject</code> 模块</li>
+</ul>
+<ul>
+<li><code>npm install hexo-prism-plugin hexo-inject --save</code></li>
+<li>修改<code>_config.yml</code></li>
+</ul>
+<pre class=" language-yml"><code class="language-yml">highlight:
+  enable: false  # 关闭默认的highlight
+
+prism_plugin:
+  mode: 'preprocess'    # realtime/preprocess
+  theme: 'base16-ateliersulphurpool.light' # 主题
+  line_number: false    # default false
+  # custom_css: 'path/to/your/custom.css'  </code></pre>
+<h2 id="为主题图片添加大图"><a href="#为主题图片添加大图" class="headerlink" title="为主题图片添加大图"></a>为主题图片添加大图</h2><p>主题无法对图片进行放大，图片最大也只是 <code>780 * 562</code>, 体验上不是很好，这里我使用了fancybox 进行修改</p>
+<p>下载fancybox的文件</p>
+<ul>
+<li><p>将 <code>jquery.fancybox.min.js</code>, <code>jquery.min.js</code> 放入 <code>theme/chic/source/js</code> 目录下</p>
+</li>
+<li><p>将 <code>jquery.fancybox.min.css</code> 放入 <code>theme/chic/source/css/_lib/</code>目录下</p>
+</li>
+<li><p>修改 <code>chic/_config.yml</code>, 添加代码</p>
+<pre class=" language-yml"><code class="language-yml">fancybox: 
+  enable: true
+  jquery: /js/jquery.min.js
+  fancyjs: /js/jquery.fancybox.min.js</code></pre>
+</li>
+<li><p>修改 <code>Chic/layout/_partial/head.ejs</code> 添加以下代码</p>
+</li>
+</ul>
+<pre class=" language-js"><code class="language-js"><span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">if</span><span class="token punctuation">(</span>theme<span class="token punctuation">.</span>fancybox<span class="token punctuation">.</span>enable<span class="token operator">!==</span><span class="token keyword">null</span><span class="token operator">&amp;&amp;</span>theme<span class="token punctuation">.</span>fancybox<span class="token punctuation">.</span>enable<span class="token operator">===</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token operator">%</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span>script type<span class="token operator">=</span><span class="token string">"text/javascript"</span>  src<span class="token operator">=</span><span class="token string">"&lt;%- url_for(theme.fancybox.jquery) %>"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span>
+    <span class="token operator">&lt;</span>script type<span class="token operator">=</span><span class="token string">"text/javascript"</span>  src<span class="token operator">=</span><span class="token string">"&lt;%- url_for(theme.fancybox.fancyjs) %>"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token punctuation">}</span> <span class="token operator">%</span><span class="token operator">></span></code></pre>
+<ul>
+<li>在 <code>Chic/source/css/style.styl</code> 添加,</li>
+</ul>
+<pre class=" language-css"><code class="language-css">@import <span class="token string">"_lib/jquery.fancybox.min.css"</span></code></pre>
+<p>这里添加css 不知道为什么不可以直接 跟上面添加js 一样，我找了很久都没找到解决方案，只能够在style 下强行添加css</p>
+<ul>
+<li>最后在 <code>source/js/script.js</code> 的document.ready()的回调回调函数添加 以下代码就可以</li>
+</ul>
+<pre class=" language-js"><code class="language-js"><span class="token function">$</span><span class="token punctuation">(</span><span class="token string">"a.group"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">fancybox</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token string">'transitionIn'</span>    <span class="token punctuation">:</span>    <span class="token string">'elastic'</span><span class="token punctuation">,</span>
+    <span class="token string">'transitionOut'</span>    <span class="token punctuation">:</span>    <span class="token string">'elastic'</span><span class="token punctuation">,</span>
+    <span class="token string">'speedIn'</span>        <span class="token punctuation">:</span>    <span class="token number">600</span><span class="token punctuation">,</span> 
+    <span class="token string">'speedOut'</span>        <span class="token punctuation">:</span>    <span class="token number">200</span><span class="token punctuation">,</span> 
+    <span class="token string">'overlayShow'</span>    <span class="token punctuation">:</span>    <span class="token boolean">false</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>这里强行使用<code>&lt;a class=&quot;group&quot;&gt;</code>链接 包裹这img 表示使用fancybox</p>
+<pre class=" language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>group<span class="token punctuation">"</span></span> <span class="token attr-name">rel</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>group1<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>图片url<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>图片url<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>    
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span></code></pre>
+<h2 id="添加力扣页面"><a href="#添加力扣页面" class="headerlink" title="添加力扣页面"></a>添加力扣页面</h2><blockquote>
+<p>我这里是想自定义添加一个新的页面，主要放自己练习算法时的解题思路，叫力扣，但又不想跟原来发表的文章混在一起</p>
+</blockquote>
+<ul>
+<li>添加文件夹 <code>source/algorithm</code>, 只有一个文件<code>index.md</code></li>
+</ul>
+<pre class=" language-md"><code class="language-md"># index.md
+---
+title: 力扣
+date: 2020-04-08 16:09:43
+layout: algorithm
+---</code></pre>
+<ul>
+<li>在<code>Chic/layout</code> 添加 <code>algorithm.ejs</code></li>
+</ul>
+<pre class=" language-js"><code class="language-js"><span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">-</span> <span class="token function">partial</span><span class="token punctuation">(</span><span class="token string">'_page/algorithm'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>pagination<span class="token punctuation">:</span> config<span class="token punctuation">.</span>archive<span class="token punctuation">,</span> index<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">%</span><span class="token operator">></span></code></pre>
+<ul>
+<li>在<code>Chic/layout/_page</code> 添加 <code>algorithm.ejs</code></li>
+</ul>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// Chic/layout/_page/algorithm.ejs</span>
+<span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"post-wrap algorithm-page archive"</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"tags-algorithm"</span><span class="token operator">></span>
+        <span class="token comment" spellcheck="true">// 这里就是算法 tag, 我只筛选出 tag包含 algorithm- 的那些</span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span>site<span class="token punctuation">.</span>tags<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>item<span class="token operator">=</span><span class="token operator">></span><span class="token punctuation">{</span><span class="token operator">%</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">if</span><span class="token punctuation">(</span>item<span class="token punctuation">.</span>name<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span><span class="token string">"algorithm-"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token operator">%</span><span class="token operator">></span>
+                <span class="token operator">&lt;</span>a <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"tags-item"</span> href<span class="token operator">=</span><span class="token string">"&lt;%-url_for(item.path)%>"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">-</span> item<span class="token punctuation">.</span>name<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"algorithm-"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">%</span><span class="token operator">></span><span class="token operator">&lt;</span>span <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"nums"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">-</span>item<span class="token punctuation">.</span>length<span class="token operator">%</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>span<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token punctuation">}</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token operator">%</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+    <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"archive"</span><span class="token operator">></span>
+        <span class="token comment" spellcheck="true">// 每页条数</span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">var</span> perPage <span class="token operator">=</span> config<span class="token punctuation">.</span>algorithm_generator<span class="token punctuation">.</span>per_page <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token comment" spellcheck="true">// 这里我直接获取当前页面是第几页，没有page的话就是第一页</span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">var</span> currentPage <span class="token operator">=</span> url<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token regex">/page\/(.*)\//</span><span class="token punctuation">)</span> <span class="token operator">?</span> url<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token regex">/page\/(.*)\//</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token number">1</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">var</span> last_year <span class="token operator">=</span> <span class="token string">''</span><span class="token punctuation">;</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token comment" spellcheck="true">// 然后我过滤掉 只是type == 'algorithm'的那些文章， 这个type, 在我们新键文章的时候跟title，tag那些写在一起</span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">var</span> posts <span class="token operator">=</span> site<span class="token punctuation">.</span>posts<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token punctuation">(</span>item<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> item<span class="token punctuation">.</span>type <span class="token operator">&amp;&amp;</span> item<span class="token punctuation">.</span>type <span class="token operator">==</span> <span class="token string">'algorithm'</span><span class="token punctuation">)</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token comment" spellcheck="true">// 做一个排序, 按最新的排</span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> posts<span class="token punctuation">.</span>data <span class="token operator">=</span> posts<span class="token punctuation">.</span>data<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> b<span class="token punctuation">.</span>date <span class="token operator">-</span> a<span class="token punctuation">.</span>date<span class="token punctuation">)</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token comment" spellcheck="true">// 选择当前页面的文章</span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> posts<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token punctuation">(</span>currentPage <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">*</span> perPage<span class="token punctuation">,</span> currentPage <span class="token operator">*</span> perPage <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">each</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span>post<span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token operator">%</span><span class="token operator">></span>
+                <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">var</span> cur_year <span class="token operator">=</span> post<span class="token punctuation">.</span>date<span class="token punctuation">.</span><span class="token function">year</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">%</span><span class="token operator">></span>
+                <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">if</span><span class="token punctuation">(</span>last_year <span class="token operator">!==</span> cur_year<span class="token punctuation">)</span><span class="token punctuation">{</span> <span class="token operator">%</span><span class="token operator">></span>
+                    <span class="token operator">&lt;</span>h3<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">-</span> cur_year <span class="token operator">%</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>h3<span class="token operator">></span>
+                <span class="token operator">&lt;</span><span class="token operator">%</span> last_year <span class="token operator">=</span> cur_year<span class="token punctuation">;</span> <span class="token punctuation">}</span> <span class="token operator">%</span><span class="token operator">></span>
+                <span class="token operator">&lt;</span>article <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"archive-item"</span><span class="token operator">></span>
+                    <span class="token operator">&lt;</span>a <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"archive-item-link"</span> href<span class="token operator">=</span><span class="token string">"&lt;%- url_for(post.path) %>"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">=</span> post<span class="token punctuation">.</span>title <span class="token operator">%</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">></span>
+                    <span class="token operator">&lt;</span>span <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"archive-item-date"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">-</span> <span class="token function">date</span><span class="token punctuation">(</span>post<span class="token punctuation">.</span>date<span class="token punctuation">,</span> theme<span class="token punctuation">.</span>date_format<span class="token punctuation">)</span> <span class="token operator">%</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>span<span class="token operator">></span>
+                <span class="token operator">&lt;</span><span class="token operator">/</span>article<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token comment" spellcheck="true">// 分页</span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token keyword">if</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">ceil</span><span class="token punctuation">(</span>posts<span class="token punctuation">.</span>length <span class="token operator">/</span>  perPage<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span>nav <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"pagination"</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token operator">%</span><span class="token operator">-</span> <span class="token function">paginator</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+                prev_next<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+                end_size<span class="token punctuation">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+                mid_size<span class="token punctuation">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+                total<span class="token punctuation">:</span> Math<span class="token punctuation">.</span><span class="token function">ceil</span><span class="token punctuation">(</span>posts<span class="token punctuation">.</span>length <span class="token operator">/</span>  perPage<span class="token punctuation">)</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">%</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>nav<span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">%</span> <span class="token punctuation">}</span> <span class="token operator">%</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span></code></pre>
+<p>这里有个坑，我们点击 <code>/algorithm/page/2</code> 的时候会报当前页面存在，我通过 <code>hexo-generator-category</code> 找到类似的解决方案，<br>我通过文档的<a href="https://hexo.io/zh-cn/api/generator.html#%E5%BD%92%E6%A1%A3%E9%A1%B5%E9%9D%A2" target="_blank" rel="noopener">生成器</a>写了一个类似的解决方案</p>
+<ul>
+<li>在 <code>Chic/script</code> 下添加 <code>algorithm.js</code>, 这里为了搞一个分页出来而已</li>
+</ul>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">var</span> pagination <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'hexo-pagination'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 要安装模块啊</span>
+hexo<span class="token punctuation">.</span>extend<span class="token punctuation">.</span>generator<span class="token punctuation">.</span><span class="token function">register</span><span class="token punctuation">(</span><span class="token string">'algorithm'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>locals<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">// 这里不能对locals.post 进行更改，一旦发生更改，网站变量 site.posts 的内容也会跟着更改，这里不知道是为什么，我纠结了很久</span>
+    <span class="token keyword">let</span> allPost <span class="token operator">=</span> locals<span class="token punctuation">.</span>posts<span class="token punctuation">;</span> 
+
+    <span class="token keyword">return</span> <span class="token function">pagination</span><span class="token punctuation">(</span><span class="token string">'/algorithm'</span><span class="token punctuation">,</span> allPost<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+        perPage<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>config<span class="token punctuation">.</span>algorithm_generator<span class="token punctuation">.</span>per_page<span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 在 _config.yml 添加 algorithm_generator: 配置 类似 category_generator</span>
+        layout<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'algorithm'</span><span class="token punctuation">,</span> <span class="token string">'archive'</span><span class="token punctuation">,</span> <span class="token string">'index'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment" spellcheck="true">// 如果algorith这个layout,没有就会用 archive， 如此类推</span>
+        format<span class="token punctuation">:</span> <span class="token string">'page'</span> <span class="token operator">+</span> <span class="token string">'/%d/'</span><span class="token punctuation">,</span>
+        data<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+            __index<span class="token punctuation">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<ul>
+<li>最后只要修改一下 <code>Chic/layout/_page/archive.ejs</code> 文件跟上面类似第三部就行了, 这里说一下 config ,可以从最外层 <code>_config.yml</code>进行配置</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/hexo/"># hexo</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/07/11/%E9%9D%A2%E8%AF%95%E9%A2%98-17-13-%E6%81%A2%E5%A4%8D%E7%A9%BA%E6%A0%BC/">面试题 17.13. 恢复空格</a>
+            
+            
+            <a class="next" rel="next" href="/2020/07/07/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C/">路径总和</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

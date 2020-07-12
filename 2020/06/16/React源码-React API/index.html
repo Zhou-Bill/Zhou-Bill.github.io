@@ -82,6 +82,17 @@
     
 
 
+
+
+
+    
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+
+
+
+
+
 <meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
 <body>
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
@@ -253,7 +264,7 @@
 <h2 id="看看API"><a href="#看看API" class="headerlink" title="看看API"></a>看看API</h2><p>我们进到<code>packages/src</code>, 看到<code>React.js</code>, 其实这个文件时返回一些基本的API, 比如我们常用的<code>Children, createRef, Component, PureComponent, createContext, forwardRef, lazy, memo</code> 还有 <strong>hooks</strong> 等等，但我们先不看hooks</p>
 <h3 id="Children"><a href="#Children" class="headerlink" title="Children"></a>Children</h3><p>这个Children方法其实是给我们处理<code>props.children</code>的, <code>props.children</code>其实就是一个类数组的东西，Children的用法有遍历<code>React.Children.map</code> 或者 <code>React.Children.forEach</code>，一般情况下我们会配合<strong>组合模式cloneElement</strong>使用， 有返回<code>children</code>个数 <code>React.Children.count</code>，另外两个不常用<code>toArray</code>和 <code>only</code></p>
 <p><a href="https://zh-hans.reactjs.org/docs/react-api.html#reactchildren" target="_blank" rel="noopener">文档</a></p>
-<p><a href="https://segmentfault.com/a/1190000019968074" target="_blank" rel="noopener">源码解析</a></p>
+<p><a href="https://zhou-bill.github.io/2020/06/19/React%E6%BA%90%E7%A0%81-ReactChildren/" target="_blank" rel="noopener">源码解析</a></p>
 <h3 id="createRef"><a href="#createRef" class="headerlink" title="createRef"></a>createRef</h3><p>我们看看用法</p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">class</span> <span class="token class-name">Demo</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
     <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
@@ -346,8 +357,9 @@
                         
                 </span>
             </div>
-            
+            <div class="reward" >
                 
+                    
     <div class="sponser">
         <div class="sponser_btn">支持一下</div>
         <div class="sponser_img">
@@ -367,7 +379,8 @@
     </div>
 
 
-            
+                
+            </div>
             <div>
                 <a href="javascript:window.history.back();">back</a>
                 <span>· </span>

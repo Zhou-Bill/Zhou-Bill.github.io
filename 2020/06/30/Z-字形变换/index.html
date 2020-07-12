@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>Z 字形变换 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+
+    
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Z 字形变换</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">六月 30, 2020&nbsp;&nbsp;18:34:47</a>
+                        </span>
+                    
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><a href="https://leetcode-cn.com/problems/zigzag-conversion/" target="_blank" rel="noopener">Z 字形变换</a></p>
+<p>其实这道题就是移到数学题</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><blockquote>
+<p>以 LEETCODEISHIRING 为示例，分别对row = 3, row = 4, row = 5, 进行分析, 括号表示index</p>
+</blockquote>
+<h3 id="row-3"><a href="#row-3" class="headerlink" title="row = 3"></a>row = 3</h3><table>
+<thead>
+<tr>
+<th align="center">row/column</th>
+<th align="center">c = 0</th>
+<th align="center">c = 1</th>
+<th align="center">c = 2</th>
+<th align="center">c = 3</th>
+<th align="center">c = 4</th>
+<th align="center">c = 5</th>
+<th align="center">c = 6</th>
+<th align="center">c = 7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">r = 0</td>
+<td align="center">L(0)</td>
+<td align="center"></td>
+<td align="center">C(4)</td>
+<td align="center"></td>
+<td align="center">I(8)</td>
+<td align="center"></td>
+<td align="center">R(12)</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">r = 1</td>
+<td align="center">E(1)</td>
+<td align="center">T(3)</td>
+<td align="center">O(5)</td>
+<td align="center">E(7)</td>
+<td align="center">S(9)</td>
+<td align="center">I(11)</td>
+<td align="center">I(13)</td>
+<td align="center">G(15)</td>
+</tr>
+<tr>
+<td align="center">r = 2</td>
+<td align="center">E(2)</td>
+<td align="center"></td>
+<td align="center">D(6)</td>
+<td align="center"></td>
+<td align="center">H(10)</td>
+<td align="center"></td>
+<td align="center">N(14)</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h3 id="row-4"><a href="#row-4" class="headerlink" title="row = 4"></a>row = 4</h3><table>
+<thead>
+<tr>
+<th align="center">row/column</th>
+<th align="center">c = 0</th>
+<th align="center">c = 1</th>
+<th align="center">c = 2</th>
+<th align="center">c = 3</th>
+<th align="center">c = 4</th>
+<th align="center">c = 5</th>
+<th align="center">c = 6</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">r = 0</td>
+<td align="center">L(0)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">D(6)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">R(12)</td>
+</tr>
+<tr>
+<td align="center">r = 1</td>
+<td align="center">E(1)</td>
+<td align="center"></td>
+<td align="center">O(5)</td>
+<td align="center">E(7)</td>
+<td align="center"></td>
+<td align="center">I(11)</td>
+<td align="center">I(13)</td>
+</tr>
+<tr>
+<td align="center">r = 2</td>
+<td align="center">E(2)</td>
+<td align="center">C(4)</td>
+<td align="center"></td>
+<td align="center">I(8)</td>
+<td align="center">H(10)</td>
+<td align="center"></td>
+<td align="center">N(14)</td>
+</tr>
+<tr>
+<td align="center">r = 3</td>
+<td align="center">T(3)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">S(9)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">G(15)</td>
+</tr>
+</tbody></table>
+<h3 id="row-5"><a href="#row-5" class="headerlink" title="row = 5"></a>row = 5</h3><table>
+<thead>
+<tr>
+<th align="center">row/column</th>
+<th align="center">c = 0</th>
+<th align="center">c = 1</th>
+<th align="center">c = 2</th>
+<th align="center">c = 3</th>
+<th align="center">c = 4</th>
+<th align="center">c = 5</th>
+<th align="center">c = 6</th>
+<th align="center">c = 7</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">r = 0</td>
+<td align="center">L(0)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">I(8)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">r = 1</td>
+<td align="center">E(1)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">E(7)</td>
+<td align="center">S(9)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">G(15)</td>
+</tr>
+<tr>
+<td align="center">r = 2</td>
+<td align="center">E(2)</td>
+<td align="center"></td>
+<td align="center">D(6)</td>
+<td align="center"></td>
+<td align="center">H(10)</td>
+<td align="center"></td>
+<td align="center">N(14)</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">r = 3</td>
+<td align="center">T(3)</td>
+<td align="center">O(5)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">I(11)</td>
+<td align="center">I(13)</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">r = 4</td>
+<td align="center">C(4)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">R(12)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<ul>
+<li>我们看这三个 <code>r = 0</code>时，第一个数跟第二数的偏移， 我们称这个为总偏移量<ul>
+<li>row = 3时, 偏移为 4 - 0 = 4</li>
+<li>row = 4时，偏移为 6 - 0 = 6</li>
+<li>row = 5时，偏移为 8 - 0 = 8</li>
+<li><strong>总结：</strong> 偏移 = 2 * row - 2</li>
+</ul>
+</li>
+<li>再看 <code>r = 1</code>时，就是第二行数据， 第一个数跟第二个数以及第三个数的偏移<ul>
+<li>row = 3 时，偏移为 3 - 1 = 2， 5 - 3 = 2， 上面总偏移量为4，所以第3个数跟第2个数的偏移量为 4-2 =2 </li>
+<li>row = 4 时，偏移为 5 - 1 = 4， 7 - 5 = 2， 上面总偏移量为6，所以第3个数跟第2个数的偏移量为 6-4 =2。 这一行往后的偏移是 4, 2, 4, 2, 4, 2 这样走  </li>
+<li>row = 5 时，偏移为 7 - 1 = 6， 9 - 7 = 2， 上面总偏移量为8，所以第3个数跟第2个数的偏移量为 6-4 =2。 这一行往后的偏移是 6, 2, 6, 2, 6, 2 这样</li>
+<li>直到<strong>前一个数 + 偏移量 &gt;= s.length</strong>换下一行。</li>
+<li><strong>总结：</strong>第一个数与第二个数偏移量为 2 * (row - (r + 1)), 而第二个数跟第三个数的偏移量为 （总偏移量 - 第一个数跟第二个数的偏移量）</li>
+</ul>
+</li>
+<li>往后如此类推，但最后一行跟第一行的偏移量应该一样</li>
+</ul>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><pre class=" language-js"><code class="language-js"><span class="token keyword">var</span> convert <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> numRows<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> length <span class="token operator">=</span> s<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>numRows <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> s<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">let</span> totalOffset <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> numRows <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 总偏移量</span>
+    <span class="token keyword">let</span> flag <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 标志位</span>
+    <span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>      <span class="token comment" spellcheck="true">// 表示数组中有几个数</span>
+    <span class="token keyword">let</span> row <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>    <span class="token comment" spellcheck="true">// 表示 第几行</span>
+    <span class="token keyword">let</span> start <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 表示 当前index</span>
+    <span class="token keyword">let</span> offset <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> <span class="token punctuation">(</span>numRows <span class="token operator">-</span> row<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">while</span><span class="token punctuation">(</span>i <span class="token operator">&lt;</span> length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        result<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>s<span class="token punctuation">[</span>start<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 第一行的偏移量跟最后一行的偏移量一样</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>row <span class="token operator">==</span> <span class="token number">1</span> <span class="token operator">||</span> row <span class="token operator">==</span> numRows<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            start <span class="token operator">=</span> start <span class="token operator">+</span> totalOffset<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span><span class="token punctuation">(</span>flag<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                start <span class="token operator">=</span> start <span class="token operator">+</span> offset<span class="token punctuation">;</span>
+                flag <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                start <span class="token operator">=</span> start <span class="token operator">+</span> <span class="token punctuation">(</span>totalOffset <span class="token operator">-</span> offset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                flag <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+        i<span class="token operator">++</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 换下一行，同时计算他的偏移值，把flag 重置</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>start <span class="token operator">>=</span> length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            row<span class="token operator">++</span><span class="token punctuation">;</span>
+            start <span class="token operator">=</span> row <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span>
+            flag <span class="token operator">=</span> <span class="token boolean">true</span>
+            offset <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> <span class="token punctuation">(</span>numRows <span class="token operator">-</span> row<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> result<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/algorithm-%E5%9F%BA%E7%A1%80/"># 基础</a>
+                    
+                        <a href="/tags/algorithm-%E6%95%B0%E7%BB%84/"># 数组</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/07/03/108-%E5%B0%86%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E8%BD%AC%E6%8D%A2%E4%B8%BA%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">108. 将有序数组转换为二叉搜索树</a>
+            
+            
+            <a class="next" rel="next" href="/2020/06/29/%E6%95%B0%E7%BB%84%E4%B8%AD%E7%9A%84%E7%AC%ACK%E4%B8%AA%E6%9C%80%E5%A4%A7%E5%85%83%E7%B4%A0/">数组中的第K个最大元素</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
