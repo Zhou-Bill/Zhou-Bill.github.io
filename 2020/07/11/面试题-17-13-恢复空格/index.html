@@ -355,6 +355,7 @@
         node<span class="token punctuation">[</span><span class="token string">"#"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"#"</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span>
     <span class="token comment" spellcheck="true">// 预处理出字典中存在的所有下标区间 cache[j].get[k] == true 表示[k,j]区间的单词在字典中能找到。</span>
+    <span class="token comment" spellcheck="true">// 我们寻找字典开头，要是选找到开头的话继续往下找字典，要是遇到 # 那么就结束了，对于每个字符都是都一样，最后记录当前位置字符到字典结束的长度</span>
     <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
         <span class="token keyword">let</span> node <span class="token operator">=</span> trie<span class="token punctuation">;</span>
         <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">let</span> j <span class="token operator">=</span> i<span class="token punctuation">;</span> j <span class="token operator">&lt;=</span> n<span class="token punctuation">;</span> j<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
