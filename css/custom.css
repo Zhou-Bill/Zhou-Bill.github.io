@@ -81,3 +81,12 @@
     margin: 15px 0;
   }
 }
+summary {
+  padding: 10px;
+  background: #f6f6f6;
+  border-radius: 5px;
+  cursor: pointer;
+}
+summary mark {
+  background-color: #f6f6f6;
+}

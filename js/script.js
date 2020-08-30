@@ -70,7 +70,6 @@ document.ready(
                     document.getElementsByTagName('body')[0].classList.remove('dark-theme');
                     // mobile
                     document.getElementById("mobile-toggle-theme").innerText = "· Light"
-
                 } else {
                     document.getElementsByTagName('body')[0].classList.add('dark-theme');
                     // mobile
@@ -81,16 +80,6 @@ document.ready(
             })
         };
         _Blog.toggleTheme();
-
-
-        /* Apply fancybox to multiple items */
-        $("a.group").fancybox({
-            'transitionIn'	:	'elastic',
-            'transitionOut'	:	'elastic',
-            'speedIn'		:	600, 
-            'speedOut'		:	200, 
-            'overlayShow'	:	false
-        });
 
     }
 );

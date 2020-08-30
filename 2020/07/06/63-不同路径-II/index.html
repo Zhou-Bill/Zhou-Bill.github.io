@@ -514,7 +514,7 @@
             <p><a href="https://leetcode-cn.com/problems/unique-paths-ii/" target="_blank" rel="noopener">63. 不同路径 II</a></p>
 <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。<br>机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。<br>现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？</p>
 <a class="group" rel="group1 noopener" href="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/robot_maze.png" target="_blank">
-    <img style="margin-left: 0px" src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/robot_maze.png" />
+    <img style="margin-left: 0px" src="https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/10/22/robot_maze.png">
 </a>
 
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>题目说明每次 <strong>只能向下或者向右移动一步</strong>。那么我们分析每次走到<code>a[m][n]</code> 只能从上面那个格子<code>a[m - 1][n]</code> 或者从左边那个格子<code>a[m][n - 1]</code>过来，我们定义 <code>a[m][n]</code>是到当前格子的有多少种路径数。 所以我们的递推公式是： <code>a[m][n] = a[m - 1][n] + a[m][n - 1]</code>;</p>

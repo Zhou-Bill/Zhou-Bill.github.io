@@ -516,7 +516,7 @@
 <blockquote>
 <p>以[1,8,6,2,5,4,8,3,7]为例子<br>最大的面积为49， 以x1轴为1，y1轴为8， 和x2为8，y2为7构成的面积最大为49</p>
 </blockquote>
-<img src="https://aliyun-lc-upload.oss-cn-hangzhou.aliyuncs.com/aliyun-lc-upload/uploads/2018/07/25/question_11.jpg" style="margin-left: 0; height: 250px" />
+<img src="https://aliyun-lc-upload.oss-cn-hangzhou.aliyuncs.com/aliyun-lc-upload/uploads/2018/07/25/question_11.jpg" style="margin-left: 0; height: 250px">
 
 
 <h2 id="暴力破解"><a href="#暴力破解" class="headerlink" title="暴力破解"></a>暴力破解</h2><p>我们可以用两重循环的方式暴力破解，可是我可以看出我们其实做了一些没必要的计算，<br>    * <code>i = 0</code>时，<code>j = 1, j = 2, j = 3, .....j = 7</code>这些都是没必要计算的<br>    * <code>i = 1</code>时，<code>j = 2, j = 3, j = 4, ....j = 7</code>, 这些都是没必要的<br>    * 如此类推</p>

@@ -573,7 +573,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="查看封装的-组件"><a href="#查看封装的-组件" class="headerlink" title="查看封装的 组件"></a>查看封装的<Authorized/> 组件</h3><p>项目多次使用该组件， 使用方法如下：</p>
+<h3 id="查看封装的-组件"><a href="#查看封装的-组件" class="headerlink" title="查看封装的 组件"></a>查看封装的<Authorized> 组件</Authorized></h3><p>项目多次使用该组件， 使用方法如下：</p>
 <pre class=" language-js"><code class="language-js"><span class="token keyword">const</span> notMatch <span class="token operator">=</span> <span class="token punctuation">(</span>
     <span class="token operator">&lt;</span>div<span class="token operator">></span>not Match<span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
 <span class="token punctuation">)</span>
@@ -622,7 +622,7 @@ export default (Authorized) => renderAuthorize(Authorized);</code></pre>
 <ul>
 <li><Authorized>
 
-</li>
+</Authorized></li>
 </ul>
 <p>这个组件逻辑很简单， 需要看<code>check</code>函数，传入的<code>authority</code> 是 [‘admin’] 为例子<br>如果通过<code>check</code> 那么返回<code>children</code>, 否则返回 <code>&lt;notMatch&gt;</code></p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> Authorized<span class="token punctuation">:</span> React<span class="token punctuation">.</span>FunctionComponent<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AuthorizedProps</span><span class="token punctuation">></span></span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>
