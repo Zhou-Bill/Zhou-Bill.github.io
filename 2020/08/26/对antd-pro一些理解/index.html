@@ -586,7 +586,7 @@
 <span class="token operator">&lt;</span>Authorized authority<span class="token operator">=</span><span class="token punctuation">{</span>authorized<span class="token operator">!</span><span class="token punctuation">.</span>authority<span class="token punctuation">}</span> noMatch<span class="token operator">=</span><span class="token punctuation">{</span>noMatch<span class="token punctuation">}</span><span class="token operator">></span>
     <span class="token punctuation">{</span>children<span class="token punctuation">}</span>
 <span class="token operator">&lt;</span><span class="token operator">/</span>Authorized<span class="token operator">></span></code></pre>
-<h4 id="Authorized-实现"><a href="#Authorized-实现" class="headerlink" title="Authorized 实现"></a>Authorized 实现</h4><pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// 此时的 RenderAuthorize 来自 src/Authorithy/index</span>
+<h4 id="Authorized-实现"><a href="#Authorized-实现" class="headerlink" title="Authorized 实现"></a>Authorized 实现</h4><pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">// 此时的 RenderAuthorize 来自 src/Authorithy/index</span>
 <span class="token comment" spellcheck="true">// 重新包装了一下Authority，使得 currentAuthority = ['admin', 'user'] 在整个周期都能使用</span>
 <span class="token comment" spellcheck="true">// getAuthority 就是获取当前权限</span>
 <span class="token keyword">let</span> Authorized <span class="token operator">=</span> <span class="token function">RenderAuthorize</span><span class="token punctuation">(</span><span class="token function">getAuthority</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 此时还是从新包装了一下Authorited</span></code></pre>
@@ -595,30 +595,30 @@
 </ul>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> RenderAuthorize <span class="token operator">=</span> <span class="token function">renderAuthorize</span><span class="token punctuation">(</span>Authorized<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>返回闭包，同时导出CURRENT, 当前<code>current</code> 也就是 <code>getAuthority()</code>的值</p>
-<pre class=" language-JS"><code class="language-JS">/**
+<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">/**
  * use  authority or getAuthority
  * @param {string|()=>String} currentAuthority
- */
-function renderAuthorize(Authorized) {
-    return function (currentAuthority) {
-        if (currentAuthority) {
-            if (typeof currentAuthority === 'function') {
-                CURRENT = currentAuthority();
-            }
+ */</span>
+<span class="token keyword">function</span> <span class="token function">renderAuthorize</span><span class="token punctuation">(</span>Authorized<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>currentAuthority<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>currentAuthority<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> currentAuthority <span class="token operator">===</span> <span class="token string">'function'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                CURRENT <span class="token operator">=</span> <span class="token function">currentAuthority</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
 
-            if (Object.prototype.toString.call(currentAuthority) === '[object String]' || Array.isArray(currentAuthority))
-                {
-                    CURRENT = currentAuthority;
-                }
-            } else {
-                CURRENT = 'NULL';
-            }
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>Object<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>toString<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>currentAuthority<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">'[object String]'</span> <span class="token operator">||</span> Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>currentAuthority<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">{</span>
+                    CURRENT <span class="token operator">=</span> currentAuthority<span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                CURRENT <span class="token operator">=</span> <span class="token string">'NULL'</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
 
-        return Authorized;
-    };
-}
-export { CURRENT }
-export default (Authorized) => renderAuthorize(Authorized);</code></pre>
+        <span class="token keyword">return</span> Authorized<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">export</span> <span class="token punctuation">{</span> CURRENT <span class="token punctuation">}</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">(</span>Authorized<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token function">renderAuthorize</span><span class="token punctuation">(</span>Authorized<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <ul>
 <li><Authorized>
 
