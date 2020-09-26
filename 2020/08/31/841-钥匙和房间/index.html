@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>Tag: algorithm-二叉树 | Chow Bill&#39;s Blog</title>
+<title>841. 钥匙和房间 | Chow Bill&#39;s Blog</title>
 
 
 
@@ -414,74 +414,246 @@
     }
 </script>
         <div class="main">
-            
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
-<div class="container">
-    <div class="post-wrap tags">
-        <h2 class="post-title">-&nbsp;Tag&nbsp;·&nbsp;algorithm-二叉树-</h2>
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">841. 钥匙和房间</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">八月 31, 2020&nbsp;&nbsp;15:32:23</a>
+                        </span>
+                    
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><a href="https://leetcode-cn.com/problems/keys-and-rooms/" target="_blank" rel="noopener">841. 钥匙和房间</a></p>
+<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>简单说： 就是给定一个二维数组rooms， <code>rooms[i]</code> 代表的是房间，房间内有n把钥匙 <code>rooms[i][j]</code>, 获得所有房间内的钥匙后能不能把房间都打开</p>
+<h3 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h3><pre class=" language-html"><code class="language-html">输入: [[1],[2],[3],[]]
+输出: true
+解释:  
+我们从 0 号房间开始，拿到钥匙 1。
+之后我们去 1 号房间，拿到钥匙 2。
+然后我们去 2 号房间，拿到钥匙 3。
+最后我们去了 3 号房间。
+由于我们能够进入每个房间，我们返回 true。</code></pre>
+<h3 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h3><pre class=" language-html"><code class="language-html">输入：[[1,3],[3,0,1],[2],[0]]
+输出：false
+解释：我们不能进入 2 号房间。</code></pre>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>直接暴力破解， 就是遍历数组，把数组中的值放到 <code>Set</code> 里面，然后最后遍历一次状态数组即可</p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>用递归</p>
+<ul>
+<li>建立状态机。</li>
+<li>建立递归函数<ul>
+<li>当 当前房间的状态为 <code>true</code> 的时候，那么 表示这个房间已经进来过了，所以不用再继续遍历了</li>
+<li>当 当前房间的状态为 <code>false</code>的时候，那么表示当前房间没去过，把当前房间设置为<code>true</code>, 然后遍历当前房间的钥匙，继续递归</li>
+</ul>
+</li>
+<li>最后，遍历上面的状态机，如果有一个为false, 那么<code>返回false</code>，只有全部为true才<code>返回false</code></li>
+</ul>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">/**
+ * @param {number[][]} rooms
+ * @return {boolean}
+ */</span>
+<span class="token keyword">var</span> canVisitAllRooms <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>rooms<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> length <span class="token operator">=</span> rooms<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token function">Array</span><span class="token punctuation">(</span>length<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">setStatus</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> rooms<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> result<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>result<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token boolean">false</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> setStatus <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> rooms<span class="token punctuation">,</span> roomId<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>result<span class="token punctuation">[</span>roomId<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">const</span> roomData <span class="token operator">=</span> rooms<span class="token punctuation">[</span>roomId<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    result<span class="token punctuation">[</span>roomId<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token boolean">true</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> roomData<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">setStatus</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> rooms<span class="token punctuation">,</span> roomData<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/algorithm-%E9%80%92%E5%BD%92/"># 递归</a>
+                    
+                        <a href="/tags/algorithm-%E6%B7%B1%E5%BA%A6%E9%81%8D%E5%8E%86%E6%90%9C%E7%B4%A2/"># 深度遍历搜索</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
     </div>
-    <div class="post-wrap archive">
-    
-    
-    
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/09/05/webpack-%E9%85%8D%E7%BD%AE%E6%A2%B3%E7%90%86/">webpack梳理</a>
+            
+            
+            <a class="next" rel="next" href="/2020/08/26/%E5%AF%B9antd-pro%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/">对antd-pro一些理解</a>
+            
+        </section>
+
         
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
         
-            
-            
-                <h3>2020</h3>
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/09/26/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C-II/">路径总和 II</a>
-                <span class="archive-item-date">九月 26, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/18/%E6%9C%89%E5%BA%8F%E9%93%BE%E8%A1%A8%E8%BD%AC%E6%8D%A2%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">有序链表转换二叉搜索树</a>
-                <span class="archive-item-date">八月 18, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/12/%E5%89%91%E6%8C%87-Offer-55-II-%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91/">剑指 Offer 55 - II. 平衡二叉树</a>
-                <span class="archive-item-date">八月 12, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/07/%E7%9B%B8%E5%90%8C%E7%9A%84%E6%A0%91/">相同的树</a>
-                <span class="archive-item-date">八月 7, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/30/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6/">二叉树的最大深度</a>
-                <span class="archive-item-date">七月 30, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/07/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C/">路径总和</a>
-                <span class="archive-item-date">七月 7, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/03/108-%E5%B0%86%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E8%BD%AC%E6%8D%A2%E4%B8%BA%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">108. 将有序数组转换为二叉搜索树</a>
-                <span class="archive-item-date">七月 3, 2020</span>
-            </article>
-        
-        
-    
-  
-</div>
+
+    </article>
 </div>
 
         </div>

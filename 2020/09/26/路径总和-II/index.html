@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>Tag: algorithm-二叉树 | Chow Bill&#39;s Blog</title>
+<title>路径总和 II | Chow Bill&#39;s Blog</title>
 
 
 
@@ -414,74 +414,256 @@
     }
 </script>
         <div class="main">
-            
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
-<div class="container">
-    <div class="post-wrap tags">
-        <h2 class="post-title">-&nbsp;Tag&nbsp;·&nbsp;algorithm-二叉树-</h2>
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">路径总和 II</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">九月 26, 2020&nbsp;&nbsp;13:32:57</a>
+                        </span>
+                    
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><a href="https://leetcode-cn.com/problems/path-sum-ii/" target="_blank" rel="noopener">路径总和 II</a></p>
+<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>给定一个二叉树和一个目标和，找到所有从根节点到叶子节点路径总和等于给定目标和的路径。</p>
+<p>说明: 叶子节点是指没有子节点的节点。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>给定如下二叉树，以及目标和 sum = 22</p>
+<pre class=" language-jsx"><code class="language-jsx">              <span class="token number">5</span>
+             <span class="token operator">/</span> \
+            <span class="token number">4</span>   <span class="token number">8</span>
+           <span class="token operator">/</span>   <span class="token operator">/</span> \
+          <span class="token number">11</span>  <span class="token number">13</span>  <span class="token number">4</span>
+         <span class="token operator">/</span>  \    <span class="token operator">/</span> \
+        <span class="token number">7</span>    <span class="token number">2</span>  <span class="token number">5</span>   <span class="token number">1</span>
+</code></pre>
+<p>返回</p>
+<pre><code>[
+   [5,4,11,2],
+   [5,8,4,5]
+]</code></pre><h3 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h3><p>其实这道题跟<a href="https://zhou-bill.github.io/2020/07/07/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C/" target="_blank" rel="noopener">路径总和</a>这道题很相似</p>
+<ul>
+<li>其实就是将<strong>每次遍历的数</strong>放到 <code>prefix</code> 中，判断当前 节点是否有子节点 还有 <code>sum - value === 0</code>, 是的话，放入到 <code>res</code> </li>
+<li>有 左节点 进入递归</li>
+<li>有 右节点 进入递归</li>
+</ul>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">/**
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+ */</span>
+<span class="token comment" spellcheck="true">/**
+ * @param {TreeNode} root
+ * @param {number} sum
+ * @return {number[][]}
+ */</span>
+<span class="token keyword">var</span> pathSum <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> sum<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> res <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> prefix <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>root<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> res
+    <span class="token punctuation">}</span>
+    <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> sum<span class="token punctuation">,</span> res<span class="token punctuation">,</span> prefix<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> res<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> dfs <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span>root<span class="token punctuation">,</span> sum<span class="token punctuation">,</span> res<span class="token punctuation">,</span> prefix<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> value <span class="token operator">=</span> root<span class="token punctuation">.</span>val<span class="token punctuation">;</span>
+    <span class="token keyword">const</span> remain <span class="token operator">=</span> sum <span class="token operator">-</span> value<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// 如果叶子节点都没有而且 sum - value == 0, 那么我们将prefix 加进数组</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>root<span class="token punctuation">.</span>left <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>root<span class="token punctuation">.</span>right <span class="token operator">&amp;&amp;</span> remain <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        res<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token operator">...</span>prefix<span class="token punctuation">,</span> value<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 没有子节点 且 remain !== 0 那就停止递归</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>root<span class="token punctuation">.</span>left <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>root<span class="token punctuation">.</span>right <span class="token operator">&amp;&amp;</span> remain <span class="token operator">!==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 有左子节点</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>left<span class="token punctuation">,</span> remain<span class="token punctuation">,</span> res<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token operator">...</span>prefix<span class="token punctuation">,</span> value<span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment" spellcheck="true">// 有右子节点, 进入递归</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">dfs</span><span class="token punctuation">(</span>root<span class="token punctuation">.</span>right<span class="token punctuation">,</span> remain<span class="token punctuation">,</span> res<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token operator">...</span>prefix<span class="token punctuation">,</span> value<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>像这种需要保留 状态集的可以用<code>prefix</code> 装着，最后当符合条件的时候再 把 <code>prefix</code> 装到 <code>result</code></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/algorithm-%E4%BA%8C%E5%8F%89%E6%A0%91/"># 二叉树</a>
+                    
+                        <a href="/tags/algorithm-%E6%B7%B1%E5%BA%A6%E6%90%9C%E7%B4%A2%E4%BC%98%E5%85%88/"># 深度搜索优先</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
     </div>
-    <div class="post-wrap archive">
-    
-    
-    
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2020/09/10/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/">面试总结</a>
+            
+        </section>
+
         
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
         
-            
-            
-                <h3>2020</h3>
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/09/26/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C-II/">路径总和 II</a>
-                <span class="archive-item-date">九月 26, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/18/%E6%9C%89%E5%BA%8F%E9%93%BE%E8%A1%A8%E8%BD%AC%E6%8D%A2%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">有序链表转换二叉搜索树</a>
-                <span class="archive-item-date">八月 18, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/12/%E5%89%91%E6%8C%87-Offer-55-II-%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91/">剑指 Offer 55 - II. 平衡二叉树</a>
-                <span class="archive-item-date">八月 12, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/07/%E7%9B%B8%E5%90%8C%E7%9A%84%E6%A0%91/">相同的树</a>
-                <span class="archive-item-date">八月 7, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/30/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6/">二叉树的最大深度</a>
-                <span class="archive-item-date">七月 30, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/07/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C/">路径总和</a>
-                <span class="archive-item-date">七月 7, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/03/108-%E5%B0%86%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E8%BD%AC%E6%8D%A2%E4%B8%BA%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">108. 将有序数组转换为二叉搜索树</a>
-                <span class="archive-item-date">七月 3, 2020</span>
-            </article>
-        
-        
-    
-  
-</div>
+
+    </article>
 </div>
 
         </div>

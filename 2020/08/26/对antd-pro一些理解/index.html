@@ -594,7 +594,7 @@
 <li>RenderAuthorize</li>
 </ul>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> RenderAuthorize <span class="token operator">=</span> <span class="token function">renderAuthorize</span><span class="token punctuation">(</span>Authorized<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-<p>返回闭包，同时导出CURRENT, 当前<code>current</code> 也就是 <code>getAuthority()</code>的值</p>
+<p>返回闭包，同时导出CURRENT, 当前<code>current</code> 也就是 <code>getAuthority()</code>的值， 也可以理解成一个<code>HOC</code>吧</p>
 <pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">/**
  * use  authority or getAuthority
  * @param {string|()=>String} currentAuthority
@@ -723,7 +723,117 @@
   <span class="token punctuation">}</span>
   <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">Error</span><span class="token punctuation">(</span><span class="token string">'unsupported parameters'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
-<h2 id="登录组件"><a href="#登录组件" class="headerlink" title="登录组件"></a>登录组件</h2><p>以后再写</p>
+<h2 id="登录组件"><a href="#登录组件" class="headerlink" title="登录组件"></a>登录组件</h2><p><code>pages/user/login</code> 查看 <code>index.tsx</code></p>
+<p><code>Login</code>页面有一个 <LoginForm> 包裹着两个 <code>&lt;Tab&gt;</code>, <code>&lt;Tab&gt;</code>下面又是一下Input组件，只是被重新包装了</LoginForm></p>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">// 我们可以看出 UserName, Password 等等都是LoginForm导出的</span>
+<span class="token keyword">const</span> <span class="token punctuation">{</span> Tab<span class="token punctuation">,</span> UserName<span class="token punctuation">,</span> Password<span class="token punctuation">,</span> Mobile<span class="token punctuation">,</span> Captcha<span class="token punctuation">,</span> Submit <span class="token punctuation">}</span> <span class="token operator">=</span> LoginForm<span class="token punctuation">;</span></code></pre>
+<p>我们看下 <code>Login</code> 这个页面的大体结构</p>
+<ul>
+<li>用一个<code>&lt;LoginForm /&gt;</code> 包裹着两个<code>&lt;Tab&gt;</code>, <code>&lt;Tab&gt;</code> 底下是登录按钮还有其他的登录方式</li>
+<li>其中一个<code>&lt;Tab&gt;对应的是账号密码登录</code>， 另一个是<code>短信验证码登录</code></li>
+<li>下面的<code>status</code>, <code>loginType</code> 是 <code>redux</code>的状态，表示登录失败后会有报错信息</li>
+<li><code>&lt;LoginForm&gt;</code> 的 <code>activeKey</code> 只有两个 <code>account</code>, <code>mobile</code> 代表账号登录跟短信登录</li>
+</ul>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>LoginForm</span> <span class="token attr-name">activeKey</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>type<span class="token punctuation">}</span></span> <span class="token attr-name">onTabChange</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>setType<span class="token punctuation">}</span></span> <span class="token attr-name">onSubmit</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>handleSubmit<span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Tab</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>account<span class="token punctuation">"</span></span> <span class="token attr-name">tab</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>账户密码登录<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token punctuation">{</span>status <span class="token operator">===</span> <span class="token string">'error'</span> <span class="token operator">&amp;&amp;</span> loginType <span class="token operator">===</span> <span class="token string">'account'</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>submitting <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>LoginMessage</span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>账户或密码错误（admin/ant.design）<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">}</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>UserName</span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Password</span><span class="token punctuation">/></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Tab</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Tab</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>mobile<span class="token punctuation">"</span></span> <span class="token attr-name">tab</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>手机号登录<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token punctuation">{</span>status <span class="token operator">===</span> <span class="token string">'error'</span> <span class="token operator">&amp;&amp;</span> loginType <span class="token operator">===</span> <span class="token string">'mobile'</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>submitting <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>LoginMessage</span> <span class="token attr-name">content</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>验证码错误<span class="token punctuation">"</span></span> <span class="token punctuation">/></span></span>
+    <span class="token punctuation">)</span><span class="token punctuation">}</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Mobile</span><span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Captcha</span><span class="token punctuation">/></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Tab</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Checkbox</span> <span class="token attr-name">checked</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>autoLogin<span class="token punctuation">}</span></span> <span class="token attr-name">onChange</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token function">setAutoLogin</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>checked<span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+      自动登录
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Checkbox</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span><span class="token punctuation">></span></span>忘记密码<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Submit</span> <span class="token attr-name">loading</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>submitting<span class="token punctuation">}</span></span><span class="token punctuation">></span></span>登录<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Submit</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">className</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>other<span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+    其他登录方式
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>AlipayCircleOutlined</span> <span class="token attr-name">className</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TaobaoCircleOutlined</span> <span class="token attr-name">className</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>WeiboCircleOutlined</span> <span class="token attr-name">className</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>icon<span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Link</span> <span class="token attr-name">className</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>styles<span class="token punctuation">.</span>register<span class="token punctuation">}</span></span> <span class="token attr-name">to</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/user/register<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+      注册账户
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Link</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>LoginForm</span><span class="token punctuation">></span></span></code></pre>
+<h3 id><a href="#" class="headerlink" title></a><LoginForm></LoginForm></h3><ul>
+<li>首先先创建一个 <code>Context</code>， 这个context 主要是给 <code>&lt;LoginTab&gt;</code> 使用的</li>
+</ul>
+<h4 id="LoginTab-实现"><a href="#LoginTab-实现" class="headerlink" title="LoginTab 实现"></a>LoginTab 实现</h4><p>简单看就是 </p>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">// antd 官网</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Tabs</span> <span class="token attr-name">defaultActiveKey</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span> <span class="token attr-name">onChange</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>callback<span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TabPane</span> <span class="token attr-name">tab</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Tab</span> <span class="token attr-name">1"</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>1<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    Content <span class="token keyword">of</span> Tab Pane <span class="token number">1</span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TabPane</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TabPane</span> <span class="token attr-name">tab</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Tab</span> <span class="token attr-name">2"</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>2<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    Content <span class="token keyword">of</span> Tab Pane <span class="token number">2</span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TabPane</span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>TabPane</span> <span class="token attr-name">tab</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Tab</span> <span class="token attr-name">3"</span> <span class="token attr-name">key</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>3<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    Content <span class="token keyword">of</span> Tab Pane <span class="token number">3</span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>TabPane</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Tabs</span><span class="token punctuation">></span></span></code></pre>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">const</span> LoginTab<span class="token punctuation">:</span> React<span class="token punctuation">.</span>FC<span class="token operator">&lt;</span>LoginTabProps<span class="token operator">></span> <span class="token operator">=</span> <span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  <span class="token function">useEffect</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> uniqueId <span class="token operator">=</span> <span class="token function">generateId</span><span class="token punctuation">(</span><span class="token string">'login-tab-'</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//治理生成唯一的tab id</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> tabUtil <span class="token punctuation">}</span> <span class="token operator">=</span> props<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>tabUtil<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      tabUtil<span class="token punctuation">.</span><span class="token function">addTab</span><span class="token punctuation">(</span>uniqueId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> children <span class="token punctuation">}</span> <span class="token operator">=</span> props<span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token operator">&lt;</span>TabPane <span class="token punctuation">{</span><span class="token operator">...</span>props<span class="token punctuation">}</span><span class="token operator">></span><span class="token punctuation">{</span>props<span class="token punctuation">.</span>active <span class="token operator">&amp;&amp;</span> children<span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span>TabPane<span class="token operator">></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> WrapContext<span class="token punctuation">:</span> React<span class="token punctuation">.</span>FC<span class="token operator">&lt;</span>TabPaneProps<span class="token operator">></span> <span class="token operator">&amp;</span> <span class="token punctuation">{</span>
+  typeName<span class="token punctuation">:</span> string<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token punctuation">(</span>props<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">(</span>
+  <span class="token operator">&lt;</span>LoginContext<span class="token punctuation">.</span>Consumer<span class="token operator">></span>
+    <span class="token punctuation">{</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">&lt;</span>LoginTab tabUtil<span class="token operator">=</span><span class="token punctuation">{</span>value<span class="token punctuation">.</span>tabUtil<span class="token punctuation">}</span> <span class="token punctuation">{</span><span class="token operator">...</span>props<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">}</span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>LoginContext<span class="token punctuation">.</span>Consumer<span class="token operator">></span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>我们看看provider 的用法</p>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">// 此时这里用上了hook然后加载的时候会加载一个tab，当切换的时候会添加另一个tab</span>
+<span class="token keyword">const</span> <span class="token punctuation">[</span>tabs<span class="token punctuation">,</span> setTabs<span class="token punctuation">]</span> <span class="token operator">=</span> useState<span class="token operator">&lt;</span>string<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 这个active貌似没什么用</span>
+<span class="token keyword">const</span> <span class="token punctuation">[</span>active<span class="token punctuation">,</span> setActive<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useState</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 此时声明当前的tab是哪一个 是 account 还是 mobile</span>
+<span class="token keyword">const</span> <span class="token punctuation">[</span>type<span class="token punctuation">,</span> setType<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useMergeValue</span><span class="token punctuation">(</span><span class="token string">''</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  value<span class="token punctuation">:</span> props<span class="token punctuation">.</span>activeKey<span class="token punctuation">,</span>
+  onChange<span class="token punctuation">:</span> props<span class="token punctuation">.</span>onTabChange<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>LoginContext.Provider</span>
+  <span class="token attr-name">value</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">{</span>
+    tabUtil<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      addTab<span class="token punctuation">:</span> <span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token function">setTabs</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>tabs<span class="token punctuation">,</span> id<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      removeTab<span class="token punctuation">:</span> <span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token function">setTabs</span><span class="token punctuation">(</span>tabs<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token punctuation">(</span>currentId<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> currentId <span class="token operator">!==</span> id<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span></span><span class="token attr-name">,</span>
+    <span class="token attr-name"><span class="token namespace">updateActive:</span></span> <span class="token attr-name">(activeItem)</span> <span class="token attr-name">=</span><span class="token punctuation">></span> <span class="token attr-name">{</span>
+      <span class="token attr-name">if</span> <span class="token attr-name">(!active)</span> <span class="token attr-name">return;</span>
+      <span class="token attr-name">if</span> <span class="token attr-name">(active[type])</span> <span class="token attr-name">{</span>
+        <span class="token attr-name">active[type].push(activeItem);</span>
+      <span class="token attr-name">}</span> <span class="token attr-name">else</span> <span class="token attr-name">{</span>
+        <span class="token attr-name">active[type]</span> <span class="token attr-value"><span class="token punctuation">=</span> [activeItem];</span>
+      <span class="token attr-name">}</span>
+      <span class="token attr-name">setActive(active);</span>
+    <span class="token attr-name">},</span>
+  <span class="token attr-name">}}</span>
+<span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>LoginContext.Provider</span><span class="token punctuation">></span></span>
+</code></pre>
 
         </div>
 
@@ -780,6 +890,8 @@
             </div>
         </section>
         <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/08/31/841-%E9%92%A5%E5%8C%99%E5%92%8C%E6%88%BF%E9%97%B4/">841. 钥匙和房间</a>
             
             
             <a class="next" rel="next" href="/2020/08/26/%E7%94%B5%E8%AF%9D%E5%8F%B7%E7%A0%81%E7%9A%84%E5%AD%97%E6%AF%8D%E7%BB%84%E5%90%88/">电话号码的字母组合</a>

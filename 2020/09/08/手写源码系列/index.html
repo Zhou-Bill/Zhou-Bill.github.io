@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>Tag: algorithm-二叉树 | Chow Bill&#39;s Blog</title>
+<title>手写源码系列 | Chow Bill&#39;s Blog</title>
 
 
 
@@ -414,74 +414,225 @@
     }
 </script>
         <div class="main">
-            
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
 
     
-<div class="container">
-    <div class="post-wrap tags">
-        <h2 class="post-title">-&nbsp;Tag&nbsp;·&nbsp;algorithm-二叉树-</h2>
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">手写源码系列</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">九月 8, 2020&nbsp;&nbsp;21:03:38</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%BA%90%E7%A0%81/">源码</a>
+                            
+                        </span>
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="防抖"><a href="#防抖" class="headerlink" title="防抖"></a>防抖</h2><pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">debound</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> wait<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> time<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>time<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">clearTimeOut</span><span class="token punctuation">(</span>time<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span> 
+
+        time <span class="token operator">=</span> <span class="token function">setTimeOut</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            fn<span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span> wait<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="节流"><a href="#节流" class="headerlink" title="节流"></a>节流</h2><p>节流的意思 是在单位时间内只执行一次</p>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">throttle</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> wait<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">let</span> time <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>time<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 当前没有事件</span>
+            time <span class="token operator">=</span> <span class="token function">setTimeOut</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                time <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+                fn<span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span> wait<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h2 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h2><p><a href="https://github.com/lgwebdream/FE-Interview/issues/29" target="_blank" rel="noopener">参考链接</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/%E6%BA%90%E7%A0%81/"># 源码</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
     </div>
-    <div class="post-wrap archive">
-    
-    
-    
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/09/10/%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/">面试总结</a>
+            
+            
+            <a class="next" rel="next" href="/2020/09/05/webpack-%E9%85%8D%E7%BD%AE%E6%A2%B3%E7%90%86/">webpack梳理</a>
+            
+        </section>
+
         
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
         
-            
-            
-                <h3>2020</h3>
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/09/26/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C-II/">路径总和 II</a>
-                <span class="archive-item-date">九月 26, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/18/%E6%9C%89%E5%BA%8F%E9%93%BE%E8%A1%A8%E8%BD%AC%E6%8D%A2%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">有序链表转换二叉搜索树</a>
-                <span class="archive-item-date">八月 18, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/12/%E5%89%91%E6%8C%87-Offer-55-II-%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91/">剑指 Offer 55 - II. 平衡二叉树</a>
-                <span class="archive-item-date">八月 12, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/08/07/%E7%9B%B8%E5%90%8C%E7%9A%84%E6%A0%91/">相同的树</a>
-                <span class="archive-item-date">八月 7, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/30/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E5%A4%A7%E6%B7%B1%E5%BA%A6/">二叉树的最大深度</a>
-                <span class="archive-item-date">七月 30, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/07/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C/">路径总和</a>
-                <span class="archive-item-date">七月 7, 2020</span>
-            </article>
-        
-            
-            
-            <article class="archive-item">
-                <a class="archive-item-link" href="/2020/07/03/108-%E5%B0%86%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E8%BD%AC%E6%8D%A2%E4%B8%BA%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">108. 将有序数组转换为二叉搜索树</a>
-                <span class="archive-item-date">七月 3, 2020</span>
-            </article>
-        
-        
-    
-  
-</div>
+
+    </article>
 </div>
 
         </div>
