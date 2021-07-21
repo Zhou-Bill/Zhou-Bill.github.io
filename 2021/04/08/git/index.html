@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>Chow Bill&#39;s Blog</title>
+<title>git 操作 | Chow Bill&#39;s Blog</title>
 
 
 
@@ -414,128 +414,227 @@
     }
 </script>
         <div class="main">
-            <div class="post-wrap algorithm-page archive">
-    <div class="tags-algorithm">
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E9%80%92%E5%BD%92/">递归<span class="nums">8</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E6%B7%B1%E5%BA%A6%E9%81%8D%E5%8E%86%E6%90%9C%E7%B4%A2/">深度遍历搜索<span class="nums">4</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划<span class="nums">11</span></a>
-            
-        
-            
-        
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E4%BA%8C%E5%8F%89%E6%A0%91/">二叉树<span class="nums">7</span></a>
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E5%9F%BA%E7%A1%80/">基础<span class="nums">5</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E6%95%B0%E7%BB%84/">数组<span class="nums">3</span></a>
-            
-        
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-map/">map<span class="nums">1</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E5%8F%8C%E6%8C%87%E9%92%88/">双指针<span class="nums">4</span></a>
-            
-        
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E9%93%BE%E8%A1%A8/">链表<span class="nums">2</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E5%89%8D%E7%BC%80%E5%92%8C/">前缀和<span class="nums">1</span></a>
-            
-        
-            
-        
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E5%88%86%E6%B2%BB/">分治<span class="nums">1</span></a>
-            
-        
-            
-        
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E4%BA%8C%E5%88%86%E6%B3%95/">二分法<span class="nums">1</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E6%8E%92%E5%BA%8F/">排序<span class="nums">1</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/">快速排序<span class="nums">1</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E6%A0%88/">栈<span class="nums">1</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E5%85%A8%E6%8E%92%E5%88%97/">全排列<span class="nums">2</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E6%B7%B1%E5%BA%A6%E6%90%9C%E7%B4%A2%E4%BC%98%E5%85%88/">深度搜索优先<span class="nums">1</span></a>
-            
-        
-            
-                <a class="tags-item" href="/tags/algorithm-%E9%9D%A2%E8%AF%95%E9%A2%98/">面试题<span class="nums">2</span></a>
-            
-        
-            
-        
-            
-        
-            
-        
-            
-        
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
     </div>
-    <div class="archive">
-        
-        
-        
-        
-        
-        
-        
-        
-        <nav class="pagination">
-            <a class="page-number" href="/algorithm/">1</a><a class="page-number" href="/algorithm/page/2/">2</a><a class="page-number" href="/algorithm/page/3/">3</a><span class="page-number current">4</span>
-        </nav>
-        
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
     </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">git 操作</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 8, 2021&nbsp;&nbsp;11:33:51</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/git/">git</a>
+                            
+                        </span>
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="三大工作区"><a href="#三大工作区" class="headerlink" title="三大工作区"></a>三大工作区</h2><ul>
+<li><strong>工作区</strong>：工作区可以理解成两个分区，一个是<strong>已控制的区域</strong>，另一个是<code>新文件或文件变动区</code></li>
+<li><strong>暂存区</strong>：可以理解成 执行了<code>git add</code> 之后的操作</li>
+<li><strong>版本库</strong>：可以理解成执行了<code>git commit</code> 之后的操作</li>
+</ul>
+<p>记录一下 git 的常用操作</p>
+<h2 id="简单操作"><a href="#简单操作" class="headerlink" title="简单操作"></a>简单操作</h2><ul>
+<li><code>git add .</code></li>
+<li><code>git commit -m &quot;&quot;</code></li>
+<li><code>git pull</code></li>
+<li><code>git push</code></li>
+</ul>
+<p>以上是常用操作，就不多解释了</p>
+<h2 id="reset-回滚"><a href="#reset-回滚" class="headerlink" title="reset 回滚"></a>reset 回滚</h2><p>git 回滚可以从3大工作区来回切换</p>
+<ul>
+<li><p><code>git reset --soft 版本号</code> 指的是从<code>版本库</code>回到<code>暂存区</code></p>
+</li>
+<li><p><code>git reset HEAD .</code> 表示从<code>暂存区</code>回到 <code>工作区(新文件或文件变动区)</code></p>
+</li>
+<li><p><code>git reset -mix 版本号</code> 表示从<code>版本号</code> 回到<code>工作区(新文件或文件变动区)</code></p>
+</li>
+<li><p><code>git reset --hard 版本号</code> 表示从<code>版本号</code>回到<code>工作区（以控制的区域）</code></p>
+</li>
+</ul>
+<p><img src="/2021/04/08/git/git_reset.jpg" alt="具体图"></p>
+<h2 id="变基-rebase"><a href="#变基-rebase" class="headerlink" title="变基(rebase)"></a>变基(rebase)</h2><p>简单说就是可以简化提交记录，</p>
+<p>使用场景</p>
+<ul>
+<li>合并提交记录</li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/git/"># git</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/05/26/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">正则表达式</a>
+            
+            
+            <a class="next" rel="next" href="/2020/12/19/react%20native/">react native</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
 </div>
 
         </div>
