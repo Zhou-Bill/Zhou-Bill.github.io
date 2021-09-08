@@ -517,220 +517,223 @@
 <p><a href="https://github1s.com/ant-design/ant-design/blob/master/components/modal/Modal.tsx#L200" target="_blank" rel="noopener">源码地址</a></p>
 <h2 id="Modal"><a href="#Modal" class="headerlink" title="Modal"></a>Modal</h2><p>其实我们可以简单想一下我们需要一个Modal 框那些属性是必要的，很容易想象的到就是<code>visible</code>, <code>onCancel</code>, <code>onOk</code> 这几个属性, 因为这几个属性是<br>控制我们这个<code>Modal</code> 显示隐藏的</p>
 <p>所以就有了以下下简易传值</p>
-<pre class=" language-tsx"><code class="language-tsx">const { toggle, setToggle } = useToggle();
-<Modal 
-    visible={toggle} 
-    onCancel={() => setToggle(false)} 
-    onOk={() => doSome()}
->
-</Modal></code></pre>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> <span class="token punctuation">{</span> toggle<span class="token punctuation">,</span> setToggle <span class="token punctuation">}</span> <span class="token operator">=</span> <span class="token function">useToggle</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Modal</span> 
+    <span class="token attr-name">visible</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>toggle<span class="token punctuation">}</span></span> 
+    <span class="token attr-name">onCancel</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token function">setToggle</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span> 
+    <span class="token attr-name">onOk</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token function">doSome</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span>
+<span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Modal</span><span class="token punctuation">></span></span></code></pre>
 <h3 id="Modal-tsx"><a href="#Modal-tsx" class="headerlink" title="Modal.tsx"></a>Modal.tsx</h3><p>查看源码<code>Modal.tsx</code>,  这个组件很简单，其实就是使用了<code>rc-component</code> 的<code>rc-dialog</code>, 把我们传的<code>visble</code>, <code>onCancel</code> 等传到 <code>Dialog</code> 里面</p>
-<pre class=" language-tsx"><code class="language-tsx">import Dialog from 'rc-dialog'
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">import</span> Dialog <span class="token keyword">from</span> <span class="token string">'rc-dialog'</span>
 
-interface Iprop {
-    visible: boolean,
-    onCancel: () => void,
-    onOk: () => void
-}
+<span class="token keyword">interface</span> <span class="token class-name">Iprop</span> <span class="token punctuation">{</span>
+    visible<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span>
+    onCancel<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">void</span><span class="token punctuation">,</span>
+    onOk<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">void</span>
+<span class="token punctuation">}</span>
 
-const Modal: React.FC<Iprops> = (props: Iprops) => {
-    const { visbile, onCancel, onOk } = props;
+<span class="token keyword">const</span> Modal<span class="token punctuation">:</span> React<span class="token punctuation">.</span>FC<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Iprops</span><span class="token punctuation">></span></span> <span class="token operator">=</span> <span class="token punctuation">(</span>props<span class="token punctuation">:</span> Iprops<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> visbile<span class="token punctuation">,</span> onCancel<span class="token punctuation">,</span> onOk <span class="token punctuation">}</span> <span class="token operator">=</span> props<span class="token punctuation">;</span>
 
-    const handleCancel = () => {
-        onCancel?.()
-    }
-    const handleOk = () => {
-        onOk?.()
-    }
+    <span class="token keyword">const</span> handleCancel <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        onCancel<span class="token operator">?</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">const</span> handleOk <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        onOk<span class="token operator">?</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
 
-    return (
-        <Dialog 
-            visible={visible}
-            onCancel={handleCancel}
-            onOk={handleOk}
-        >
-    )
-}
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Dialog</span> 
+            <span class="token attr-name">visible</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>visible<span class="token punctuation">}</span></span>
+            <span class="token attr-name">onCancel</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>handleCancel<span class="token punctuation">}</span></span>
+            <span class="token attr-name">onOk</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>handleOk<span class="token punctuation">}</span></span>
+        <span class="token punctuation">></span></span>
+    <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
 </code></pre>
 <p>在<code>Modal</code> 中我们还有一些用法，比如：</p>
-<pre class=" language-tsx"><code class="language-tsx">Modal.confirm({
-    title: 'hello,',
-    content: 'world',
-    onOk() {
-        console.log('OK');
-    },
-    onCancel() {
-        console.log('Cancel');
-    },
-});</code></pre>
+<pre class=" language-jsx"><code class="language-jsx">Modal<span class="token punctuation">.</span><span class="token function">confirm</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    title<span class="token punctuation">:</span> <span class="token string">'hello,'</span><span class="token punctuation">,</span>
+    content<span class="token punctuation">:</span> <span class="token string">'world'</span><span class="token punctuation">,</span>
+    <span class="token function">onOk</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'OK'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function">onCancel</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Cancel'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
 <p>这样子可以直接调出<code>Modal</code></p>
 <p>看看<code>Modal.confirm</code> 的实现<a href="https://github1s.com/ant-design/ant-design/blob/master/components/modal/index.tsx#L27" target="_blank" rel="noopener">源码地址</a></p>
 <h2 id="Modal-confirm"><a href="#Modal-confirm" class="headerlink" title="Modal.confirm"></a>Modal.confirm</h2><p>它用了一个高阶函数<code>confirm(withxxx(props))</code>, <code>withxxx</code>函数就是给props 附加一个<code>type</code>, 即 类似<code>Object.assign(props, { type: &#39;xxx&#39; })</code>;</p>
-<pre class=" language-tsx"><code class="language-tsx">Modal.info = function infoFn(props: ModalFuncProps) {
-  return confirm(withInfo(props));
-};</code></pre>
+<pre class=" language-jsx"><code class="language-jsx">Modal<span class="token punctuation">.</span>info <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">infoFn</span><span class="token punctuation">(</span>props<span class="token punctuation">:</span> ModalFuncProps<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token function">confirm</span><span class="token punctuation">(</span><span class="token function">withInfo</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
 <ul>
-<li>withInfo 函数<pre class=" language-tsx"><code class="language-tsx">/** withInfo 函数 */
-function withInfo(props: ModalFuncProps): ModalFuncProps {
-return {
-  icon: <InfoCircleOutlined />,
-  okCancel: false,
-  ...props,
-  type: 'info',
-};
-}</code></pre>
+<li>withInfo 函数<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">/** withInfo 函数 */</span>
+<span class="token keyword">function</span> <span class="token function">withInfo</span><span class="token punctuation">(</span>props<span class="token punctuation">:</span> ModalFuncProps<span class="token punctuation">)</span><span class="token punctuation">:</span> ModalFuncProps <span class="token punctuation">{</span>
+<span class="token keyword">return</span> <span class="token punctuation">{</span>
+  icon<span class="token punctuation">:</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>InfoCircleOutlined</span> <span class="token punctuation">/></span></span><span class="token punctuation">,</span>
+  okCancel<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>props<span class="token punctuation">,</span>
+  type<span class="token punctuation">:</span> <span class="token string">'info'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
 </li>
 </ul>
 <h3 id="重头戏-Confirm-函数"><a href="#重头戏-Confirm-函数" class="headerlink" title="重头戏 Confirm 函数"></a>重头戏 Confirm 函数</h3><p>其实就是在<code>body</code> 下面 创建一个节点<code>const div = document.createElement(&#39;div&#39;);</code> 然后将<code>div</code> append 到body下， 最后调用 <code>React.render(Modal, div)</code>将model 渲染到div上, </p>
-<pre class=" language-tsx"><code class="language-tsx">function confirm(config: ModalFuncProps) {
-  const div = document.createElement('div');
-  document.body.appendChild(div);
-  let currentConfig = { ...config, close, visible: true } as any;
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">confirm</span><span class="token punctuation">(</span>config<span class="token punctuation">:</span> ModalFuncProps<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> div <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">'div'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  document<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>div<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">let</span> currentConfig <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token operator">...</span>config<span class="token punctuation">,</span> close<span class="token punctuation">,</span> visible<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span> <span class="token keyword">as</span> any<span class="token punctuation">;</span>
 
-    /** destroy 的时候将visbile 改成false，然后如果有onCancel 就执行onCancle, 将当前div remove掉 **/
-  function destroy(...args: any[]) {
-    const unmountResult = ReactDOM.unmountComponentAtNode(div);
-    if (unmountResult && div.parentNode) {
-      div.parentNode.removeChild(div);
-    }
-    const triggerCancel = args.some(param => param && param.triggerCancel);
-    if (config.onCancel && triggerCancel) {
-      config.onCancel(...args);
-    }
-    for (let i = 0; i < destroyFns.length; i++) {
-      const fn = destroyFns[i];
+    <span class="token comment" spellcheck="true">/** destroy 的时候将visbile 改成false，然后如果有onCancel 就执行onCancle, 将当前div remove掉 **/</span>
+  <span class="token keyword">function</span> <span class="token function">destroy</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> any<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> unmountResult <span class="token operator">=</span> ReactDOM<span class="token punctuation">.</span><span class="token function">unmountComponentAtNode</span><span class="token punctuation">(</span>div<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>unmountResult <span class="token operator">&amp;&amp;</span> div<span class="token punctuation">.</span>parentNode<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      div<span class="token punctuation">.</span>parentNode<span class="token punctuation">.</span><span class="token function">removeChild</span><span class="token punctuation">(</span>div<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">const</span> triggerCancel <span class="token operator">=</span> args<span class="token punctuation">.</span><span class="token function">some</span><span class="token punctuation">(</span>param <span class="token operator">=</span><span class="token operator">></span> param <span class="token operator">&amp;&amp;</span> param<span class="token punctuation">.</span>triggerCancel<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>config<span class="token punctuation">.</span>onCancel <span class="token operator">&amp;&amp;</span> triggerCancel<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      config<span class="token punctuation">.</span><span class="token function">onCancel</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> destroyFns<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> fn <span class="token operator">=</span> destroyFns<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
 
-      if (fn === close) {
-        destroyFns.splice(i, 1);
-        break;
-      }
-    }
-  }
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>fn <span class="token operator">===</span> close<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        destroyFns<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
 
-    /** render 到div上  */
-  function render(props: { visible: boolean, onOk: () => void, onCancel: () => void }) {
+    <span class="token comment" spellcheck="true">/** render 到div上  */</span>
+  <span class="token keyword">function</span> <span class="token function">render</span><span class="token punctuation">(</span>props<span class="token punctuation">:</span> <span class="token punctuation">{</span> visible<span class="token punctuation">:</span> boolean<span class="token punctuation">,</span> onOk<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">void</span><span class="token punctuation">,</span> onCancel<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">void</span> <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 
-    setTimeout(() => {
-      ReactDOM.render(
-        <ConfirmDialog
-          {...props}
-        />,
-        div,
-      );
-    });
-  }
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+      ReactDOM<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>
+        <span class="token operator">&lt;</span>ConfirmDialog
+          <span class="token punctuation">{</span><span class="token operator">...</span>props<span class="token punctuation">}</span>
+        <span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">,</span>
+        div<span class="token punctuation">,</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
 
-    /** close 的时候将visbile 改成false，然后如果有afterClose afterClose, 然后destroy掉 **/
-  function close(...args: any[]) {
-    currentConfig = {
-      ...currentConfig,
-      visible: false,
-      afterClose: () => {
-        if (typeof config.afterClose === 'function') {
-          config.afterClose();
-        }
-        destroy.apply(this, args);
-      },
-    };
-    render(currentConfig);
-  }
+    <span class="token comment" spellcheck="true">/** close 的时候将visbile 改成false，然后如果有afterClose afterClose, 然后destroy掉 **/</span>
+  <span class="token keyword">function</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> any<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    currentConfig <span class="token operator">=</span> <span class="token punctuation">{</span>
+      <span class="token operator">...</span>currentConfig<span class="token punctuation">,</span>
+      visible<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      afterClose<span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> config<span class="token punctuation">.</span>afterClose <span class="token operator">===</span> <span class="token string">'function'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          config<span class="token punctuation">.</span><span class="token function">afterClose</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        destroy<span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token function">render</span><span class="token punctuation">(</span>currentConfig<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
 
-    /** 向外暴露update 方法，可以修改props等，修改完props然后render一下 */
-  function update(configUpdate: ConfigUpdate) {
-    if (typeof configUpdate === 'function') {
-      currentConfig = configUpdate(currentConfig);
-    } else {
-      currentConfig = {
-        ...currentConfig,
-        ...configUpdate,
-      };
-    }
-    render(currentConfig);
-  }
+    <span class="token comment" spellcheck="true">/** 向外暴露update 方法，可以修改props等，修改完props然后render一下 */</span>
+  <span class="token keyword">function</span> <span class="token function">update</span><span class="token punctuation">(</span>configUpdate<span class="token punctuation">:</span> ConfigUpdate<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> configUpdate <span class="token operator">===</span> <span class="token string">'function'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      currentConfig <span class="token operator">=</span> <span class="token function">configUpdate</span><span class="token punctuation">(</span>currentConfig<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+      currentConfig <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token operator">...</span>currentConfig<span class="token punctuation">,</span>
+        <span class="token operator">...</span>configUpdate<span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">render</span><span class="token punctuation">(</span>currentConfig<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
 
-  render(currentConfig);
+  <span class="token function">render</span><span class="token punctuation">(</span>currentConfig<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  destroyFns.push(close);
+  destroyFns<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>close<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    /** 暴露update 和destroy 方法 */
-    /** 可以用 const modal = Modal.info({title: '123'}) */
-    /** 可以用 modal.update({title: '345'}) 去更新title*/
-    /** 可以用 modal.destory() 去关闭modal*/
-  return {
-    destroy: close,
-    update,
-  };
-}</code></pre>
+    <span class="token comment" spellcheck="true">/** 暴露update 和destroy 方法 */</span>
+    <span class="token comment" spellcheck="true">/** 可以用 const modal = Modal.info({title: '123'}) */</span>
+    <span class="token comment" spellcheck="true">/** 可以用 modal.update({title: '345'}) 去更新title*/</span>
+    <span class="token comment" spellcheck="true">/** 可以用 modal.destory() 去关闭modal*/</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    destroy<span class="token punctuation">:</span> close<span class="token punctuation">,</span>
+    update<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
 <p>注意看这个<code>&lt;ConfirmDialog /&gt;</code></p>
 <h2 id="ConfirmDialog"><a href="#ConfirmDialog" class="headerlink" title="ConfirmDialog"></a>ConfirmDialog</h2><p><a href="https://github1s.com/ant-design/ant-design/blob/master/components/modal/ConfirmDialog.tsx#L70" target="_blank" rel="noopener">源码</a></p>
 <p>这个ConfirmDialog 里面的<strong>确认</strong>和<strong>取消</strong> 按钮都用了一个<code>&lt;ActionButton  onOk={onOk}/&gt;</code> 其实就是一个<code>&lt;Button /&gt;</code></p>
 <p>下面只看他如何处理<code>onOk</code> 方法</p>
-<pre class=" language-tsx"><code class="language-tsx">const handlePromiseOnOk = (returnValueOfOnOk?: PromiseLike<any>) => {
-    const { close } = props;
-    if (!isThenable(returnValueOfOnOk)) {
-      return;
-    }
-    setLoading(true);
-        /** promise 完成后直接close 掉 */
-    returnValueOfOnOk!.then(
-      (...args: any[]) => {
-        setLoading(false);
-        close(...args);
-        clickedRef.current = false;
-      },
-      (e: Error) => {
-        // Emit error when catch promise reject
-        // eslint-disable-next-line no-console
-        console.error(e);
-        // See: https://github.com/ant-design/ant-design/issues/6183
-        setLoading(false);
-        clickedRef.current = false;
-      },
-    );
-  };
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> ActionButton <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> handlePromiseOnOk <span class="token operator">=</span> <span class="token punctuation">(</span>returnValueOfOnOk<span class="token operator">?</span><span class="token punctuation">:</span> PromiseLike<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>any</span><span class="token punctuation">></span></span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> close <span class="token punctuation">}</span> <span class="token operator">=</span> props<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">isThenable</span><span class="token punctuation">(</span>returnValueOfOnOk<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">setLoading</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">/** promise 完成后直接close 掉 */</span>
+    returnValueOfOnOk<span class="token operator">!</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>
+      <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> any<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token function">setLoading</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">close</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">(</span>e<span class="token punctuation">:</span> Error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// Emit error when catch promise reject</span>
+        <span class="token comment" spellcheck="true">// eslint-disable-next-line no-console</span>
+        console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// See: https://github.com/ant-design/ant-design/issues/6183</span>
+        <span class="token function">setLoading</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const { actionFn, close } = props;
-        // 这里处理按钮是否被点击了，如果是, 直接return掉
-    if (clickedRef.current) {
-      return;
-    }
-    clickedRef.current = true;
-        /** 如果没有onOk 或者是onCancel 方法，直接调用modal.close() 方法，光比弹窗 */
-    if (!actionFn) {
-      close();
-      return;
-    }
-    let returnValueOfOnOk;
-        /** 这里我的理解是 处理是否冒泡？ */
-    if (props.emitEvent) {
-      returnValueOfOnOk = actionFn(e);
-            /** 判断是否是一个promise , 处理onOk 直接return new Promise() */
-      if (props.quitOnNullishReturnValue && !isThenable(returnValueOfOnOk)) {
-        clickedRef.current = false;
-        close(e);
-        return;
-      }
-    } else if (actionFn.length) {
-            /** onOk 是否有参数 function onOk(close) 的情况， */
-      returnValueOfOnOk = actionFn(close);
-      // https://github.com/ant-design/ant-design/issues/23358
-      clickedRef.current = false;
-    } else {
-            /** 无参数 */
-      returnValueOfOnOk = actionFn();
-      if (!returnValueOfOnOk) {
-        close();
-        return;
-      }
-    }
-        /** 处理promise 方法 */
-    handlePromiseOnOk(returnValueOfOnOk);
-  };
+  <span class="token keyword">const</span> onClick <span class="token operator">=</span> <span class="token punctuation">(</span>e<span class="token punctuation">:</span> React<span class="token punctuation">.</span>MouseEvent<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>HTMLButtonElement</span><span class="token punctuation">></span></span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> <span class="token punctuation">{</span> actionFn<span class="token punctuation">,</span> close <span class="token punctuation">}</span> <span class="token operator">=</span> props<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 这里处理按钮是否被点击了，如果是, 直接return掉</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>clickedRef<span class="token punctuation">.</span>current<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">/** 如果没有onOk 或者是onCancel 方法，直接调用modal.close() 方法，光比弹窗 */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>actionFn<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">let</span> returnValueOfOnOk<span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">/** 这里我的理解是 处理是否冒泡？ */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>props<span class="token punctuation">.</span>emitEvent<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      returnValueOfOnOk <span class="token operator">=</span> <span class="token function">actionFn</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">/** 判断是否是一个promise , 处理onOk 直接return new Promise() */</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>props<span class="token punctuation">.</span>quitOnNullishReturnValue <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token function">isThenable</span><span class="token punctuation">(</span>returnValueOfOnOk<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+        <span class="token function">close</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>actionFn<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">/** onOk 是否有参数 function onOk(close) 的情况， */</span>
+      returnValueOfOnOk <span class="token operator">=</span> <span class="token function">actionFn</span><span class="token punctuation">(</span>close<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token comment" spellcheck="true">// https://github.com/ant-design/ant-design/issues/23358</span>
+      clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">/** 无参数 */</span>
+      returnValueOfOnOk <span class="token operator">=</span> <span class="token function">actionFn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>returnValueOfOnOk<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+        <span class="token comment" spellcheck="true">/** 处理promise 方法 */</span>
+    <span class="token function">handlePromiseOnOk</span><span class="token punctuation">(</span>returnValueOfOnOk<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
-    return (
-        <Button OnClick={onClick}>
-    )
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Button</span> <span class="token attr-name">OnClick</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span>onClick<span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>Button</span><span class="token punctuation">></span></span>
+    <span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
 </code></pre>
 
         </div>
