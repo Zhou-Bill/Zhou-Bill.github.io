@@ -320,7 +320,7 @@
 </script>
 
 
-<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<meta name="generator" content="Hexo 4.2.0"><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 <body>
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
         <header>
@@ -680,10 +680,7 @@
         clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
       <span class="token punctuation">}</span><span class="token punctuation">,</span>
       <span class="token punctuation">(</span>e<span class="token punctuation">:</span> Error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-        <span class="token comment" spellcheck="true">// Emit error when catch promise reject</span>
-        <span class="token comment" spellcheck="true">// eslint-disable-next-line no-console</span>
         console<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment" spellcheck="true">// See: https://github.com/ant-design/ant-design/issues/6183</span>
         <span class="token function">setLoading</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
         clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
       <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -715,7 +712,6 @@
     <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>actionFn<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">{</span>
             <span class="token comment" spellcheck="true">/** onOk 是否有参数 function onOk(close) 的情况， */</span>
       returnValueOfOnOk <span class="token operator">=</span> <span class="token function">actionFn</span><span class="token punctuation">(</span>close<span class="token punctuation">)</span><span class="token punctuation">;</span>
-      <span class="token comment" spellcheck="true">// https://github.com/ant-design/ant-design/issues/23358</span>
       clickedRef<span class="token punctuation">.</span>current <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
             <span class="token comment" spellcheck="true">/** 无参数 */</span>
@@ -791,6 +787,8 @@
             </div>
         </section>
         <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2021/09/13/antd-switch/">ant Switch 组件</a>
             
             
             <a class="next" rel="next" href="/2021/06/23/%E7%B3%BB%E7%BB%9F%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%BB%A3%E7%90%86/">系统命令行代理</a>
