@@ -320,7 +320,7 @@
 </script>
 
 
-<meta name="generator" content="Hexo 4.2.0"><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+<meta name="generator" content="Hexo 4.2.0"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
 <body>
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
         <header>
@@ -698,7 +698,7 @@ type B <span class="token operator">=</span> If<span class="token operator">&lt;
 <details>
 <summary><mark>查看答案 </mark></summary>
 
-<pre class=" language-ts"><code class="language-ts">type MyParameters<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> <span class="token keyword">any</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">any</span><span class="token operator">></span> <span class="token operator">=</span> T <span class="token keyword">extends</span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span>infer P<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">any</span> <span class="token operator">?</span> P <span class="token punctuation">:</span>never<span class="token punctuation">;</span></code></pre>
+<pre class=" language-ts"><code class="language-ts">type MyParameters<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> aninfer P<span class="token operator">=</span><span class="token operator">></span> anany <span class="token operator">?</span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token operator">...</span>P<span class="token punctuation">,</span> <span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span> T <span class="token keyword">extends</span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span>infer P<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">any</span> <span class="token operator">?</span> P <span class="token punctuation">:</span>never<span class="token punctuation">;</span></code></pre>
 </details>
 
 <h2 id="中等"><a href="#中等" class="headerlink" title="中等"></a>中等</h2><blockquote>
@@ -991,6 +991,165 @@ type ReplaceAll<span class="token operator">&lt;</span>S <span class="token keyw
 
 <span class="token comment" spellcheck="true">// 正确</span>
 type ReplaceAll<span class="token operator">&lt;</span>S <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token punctuation">,</span> From <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token punctuation">,</span> To <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token operator">></span> <span class="token operator">=</span>  From <span class="token keyword">extends</span> <span class="token string">''</span> <span class="token operator">?</span> S <span class="token punctuation">:</span> S <span class="token keyword">extends</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer start<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>From<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer end<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token operator">?</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>start<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>To<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">${ReplaceAll&lt;`</span></span>$<span class="token punctuation">{</span>end<span class="token punctuation">}</span><span class="token template-string"><span class="token string">`, From, To>}`</span></span> <span class="token punctuation">:</span> S
+</code></pre>
+</details>
+
+
+<blockquote>
+<p>追加参数</p>
+</blockquote>
+<p>实现一个范型 <code>AppendArgument&lt;Fn, A&gt;</code>，对于给定的函数类型 <code>Fn</code>，以及一个任意类型 <code>A</code>，返回一个新的函数 <code>G</code>。<code>G</code> 拥有 <code>Fn 的所有参数</code>并在末尾追加类型为 <code>A</code> 的参数。</p>
+<pre class=" language-ts"><code class="language-ts">type Fn <span class="token operator">=</span> <span class="token punctuation">(</span>a<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">,</span> b<span class="token punctuation">:</span> <span class="token keyword">string</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">number</span>
+
+type Result <span class="token operator">=</span> AppendArgument<span class="token operator">&lt;</span>Fn<span class="token punctuation">,</span> <span class="token keyword">boolean</span><span class="token operator">></span> 
+<span class="token comment" spellcheck="true">// 期望是 (a: number, b: string, x: boolean) => number</span>
+</code></pre>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">type AppendArgument<span class="token operator">&lt;</span>Fn <span class="token keyword">extends</span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> <span class="token keyword">any</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">any</span><span class="token punctuation">,</span> T<span class="token operator">></span> <span class="token operator">=</span> Fn <span class="token keyword">extends</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> infer P<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> infer R<span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token punctuation">(</span><span class="token operator">...</span>args<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token operator">...</span>P<span class="token punctuation">,</span> T<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> R <span class="token punctuation">:</span> never 
+</code></pre>
+</details>
+
+<blockquote>
+<p>Permutation</p>
+</blockquote>
+<p>Implement permutation type that transforms union types into the array that includes permutations of unions.</p>
+<pre class=" language-ts"><code class="language-ts">type perm <span class="token operator">=</span> Permutation<span class="token operator">&lt;</span><span class="token string">'A'</span> <span class="token operator">|</span> <span class="token string">'B'</span> <span class="token operator">|</span> <span class="token string">'C'</span><span class="token operator">></span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// ['A', 'B', 'C'] | ['A', 'C', 'B'] | ['B', 'A', 'C'] | ['B', 'C', 'A'] | ['C', 'A', 'B'] | ['C', 'B', 'A']</span></code></pre>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">type Permutation<span class="token operator">&lt;</span>T<span class="token punctuation">,</span> U <span class="token operator">=</span> T<span class="token operator">></span> <span class="token operator">=</span> <span class="token punctuation">[</span>T<span class="token punctuation">]</span> <span class="token keyword">extends</span> <span class="token punctuation">[</span>never<span class="token punctuation">]</span> <span class="token operator">?</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">:</span> T <span class="token keyword">extends</span> <span class="token class-name">U</span> <span class="token operator">?</span> <span class="token punctuation">[</span>T<span class="token punctuation">,</span> <span class="token operator">...</span>Permutation<span class="token operator">&lt;</span>Exclude<span class="token operator">&lt;</span>U<span class="token punctuation">,</span> T<span class="token operator">></span><span class="token operator">></span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+</code></pre>
+</details>
+
+<blockquote>
+<p>Length of string</p>
+</blockquote>
+<p>Compute the length of a string literal, which behaves like String#length.</p>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">
+type StringToArr<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">String</span><span class="token operator">></span> <span class="token operator">=</span> T <span class="token keyword">extends</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer F<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer R<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token operator">?</span> <span class="token punctuation">[</span>F<span class="token punctuation">,</span> <span class="token operator">...</span>StringToArr<span class="token operator">&lt;</span>R<span class="token operator">></span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+type StringLength<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">String</span><span class="token operator">></span> <span class="token operator">=</span> StringToArr<span class="token operator">&lt;</span>T<span class="token operator">></span><span class="token punctuation">[</span><span class="token string">'length'</span><span class="token punctuation">]</span>
+</code></pre>
+</details>
+
+<blockquote>
+<p>Flatten</p>
+</blockquote>
+<p>In this challenge, you would need to write a type that takes an array and emitted the flatten array type.</p>
+<pre class=" language-ts"><code class="language-ts">type flatten <span class="token operator">=</span> Flatten<span class="token operator">&lt;</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token operator">></span> <span class="token comment" spellcheck="true">// [1, 2, 3, 4, 5]</span></code></pre>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">
+type Flatten<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">any</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">></span> <span class="token operator">=</span> T <span class="token keyword">extends</span> <span class="token punctuation">[</span>infer First<span class="token punctuation">,</span> <span class="token operator">...</span>infer Other<span class="token punctuation">]</span> <span class="token operator">?</span> First <span class="token keyword">extends</span> <span class="token class-name">any</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">?</span> <span class="token punctuation">[</span><span class="token operator">...</span>Flatten<span class="token operator">&lt;</span>First<span class="token operator">></span><span class="token punctuation">,</span> <span class="token operator">...</span>Flatten<span class="token operator">&lt;</span>Other<span class="token operator">></span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token punctuation">[</span>First<span class="token punctuation">,</span> <span class="token operator">...</span>Flatten<span class="token operator">&lt;</span>Other<span class="token operator">></span><span class="token punctuation">]</span> <span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+</code></pre>
+</details>
+
+<blockquote>
+<p>Append to object</p>
+</blockquote>
+<p>Implement a type that adds a new field to the interface. The type takes the three arguments. The output should be an object with the new field.</p>
+<pre class=" language-ts"><code class="language-ts">type Test <span class="token operator">=</span> <span class="token punctuation">{</span> id<span class="token punctuation">:</span> <span class="token string">'1'</span> <span class="token punctuation">}</span>
+type Result <span class="token operator">=</span> AppendToObject<span class="token operator">&lt;</span>Test<span class="token punctuation">,</span> <span class="token string">'value'</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token operator">></span> <span class="token comment" spellcheck="true">// expected to be { id: '1', value: 4 }</span></code></pre>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">
+type AppendToObject<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">object</span><span class="token punctuation">,</span> U <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token punctuation">,</span> V<span class="token operator">></span> <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token punctuation">[</span>K <span class="token keyword">in</span> keyof T <span class="token operator">|</span> U<span class="token punctuation">]</span><span class="token punctuation">:</span> K <span class="token keyword">extends</span> <span class="token class-name">keyof</span> T <span class="token operator">?</span> T<span class="token punctuation">[</span>K<span class="token punctuation">]</span> <span class="token punctuation">:</span> V <span class="token punctuation">}</span>
+
+</code></pre>
+</details>
+
+<blockquote>
+<p>Absolute </p>
+</blockquote>
+<p>数字绝对值</p>
+<pre class=" language-ts"><code class="language-ts">type Test <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">100</span><span class="token punctuation">;</span>
+type Result <span class="token operator">=</span> Absolute<span class="token operator">&lt;</span>Test<span class="token operator">></span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// expected to be "100"</span></code></pre>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">type Absolute<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">number</span> <span class="token operator">|</span> <span class="token keyword">string</span> <span class="token operator">|</span> bigint<span class="token operator">></span> <span class="token operator">=</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>T<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token keyword">extends</span> <span class="token template-string"><span class="token string">`-</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer X<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token operator">?</span> X <span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>T<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span>
+</code></pre>
+</details>
+
+<blockquote>
+<p>String to Union</p>
+</blockquote>
+<p>Implement the String to Union type. Type take string argument. The output should be a union of input letters</p>
+<pre class=" language-ts"><code class="language-ts">type Test <span class="token operator">=</span> <span class="token string">'123'</span><span class="token punctuation">;</span>
+type Result <span class="token operator">=</span> StringToUnion<span class="token operator">&lt;</span>Test<span class="token operator">></span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// expected to be "1" | "2" | "3"</span></code></pre>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">type StringToUnion<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token operator">></span> <span class="token operator">=</span>  T <span class="token keyword">extends</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer F<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer R<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token operator">?</span> F <span class="token operator">|</span> StringToUnion<span class="token operator">&lt;</span>R<span class="token operator">></span> <span class="token punctuation">:</span> never 
+</code></pre>
+</details>
+
+<blockquote>
+<p>Merge </p>
+</blockquote>
+<p>Merge two types into a new type. Keys of the second type overrides keys of the first type.</p>
+<pre class=" language-ts"><code class="language-ts">type Foo <span class="token operator">=</span> <span class="token punctuation">{</span>
+  a<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+  b<span class="token punctuation">:</span> <span class="token keyword">string</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+type Bar <span class="token operator">=</span> <span class="token punctuation">{</span>
+  b<span class="token punctuation">:</span> <span class="token keyword">number</span><span class="token punctuation">;</span>
+  c<span class="token punctuation">:</span> <span class="token keyword">boolean</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+type Result <span class="token operator">=</span> Merge<span class="token operator">&lt;</span>Foo<span class="token punctuation">,</span> Bar<span class="token operator">></span><span class="token punctuation">;</span> 
+
+<span class="token comment" spellcheck="true">// {</span>
+<span class="token comment" spellcheck="true">//     a: number;</span>
+<span class="token comment" spellcheck="true">//     b: number;</span>
+<span class="token comment" spellcheck="true">//     c: boolean;</span>
+<span class="token comment" spellcheck="true">// }</span></code></pre>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">type Merge<span class="token operator">&lt;</span>F<span class="token punctuation">,</span> S<span class="token operator">></span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">[</span>key <span class="token keyword">in</span> keyof F <span class="token operator">|</span> keyof S<span class="token punctuation">]</span><span class="token punctuation">:</span> key <span class="token keyword">extends</span> <span class="token class-name">keyof</span> S <span class="token operator">?</span> S<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token punctuation">:</span> key <span class="token keyword">extends</span> <span class="token class-name">keyof</span> F <span class="token operator">?</span> F<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token punctuation">:</span> never<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+</details>
+
+<blockquote>
+<p>CamelCase</p>
+</blockquote>
+<p><code>for-bar-baz</code> -&gt; <code>forBarBaz</code></p>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">type Capitalize<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token operator">></span> <span class="token operator">=</span> T <span class="token keyword">extends</span> <span class="token punctuation">(</span><span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer first<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer R<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Uppercase<span class="token operator">&lt;</span>first<span class="token operator">></span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>R<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token punctuation">:</span> T<span class="token punctuation">;</span>
+type CamelCase<span class="token operator">&lt;</span>T <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token operator">></span> <span class="token operator">=</span> T <span class="token keyword">extends</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer start<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer end<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token operator">?</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>start<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>CamelCase<span class="token operator">&lt;</span>Capitalize<span class="token operator">&lt;</span>end<span class="token operator">></span><span class="token operator">></span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token punctuation">:</span> T
+
+type Result <span class="token operator">=</span> CamelCase<span class="token operator">&lt;</span><span class="token string">'foo--bar----baz'</span><span class="token operator">></span> <span class="token comment" spellcheck="true">// "fooBarBaz"</span>
+
+type CamelCase<span class="token operator">&lt;</span>S <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token operator">></span> <span class="token operator">=</span>  S <span class="token keyword">extends</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer X<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer Y<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token operator">?</span> Y <span class="token keyword">extends</span> <span class="token class-name">Capitalize</span><span class="token operator">&lt;</span>Y<span class="token operator">></span> <span class="token operator">?</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>X<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">-</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>CamelCase<span class="token operator">&lt;</span>Y<span class="token operator">></span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>X<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>CamelCase<span class="token operator">&lt;</span>Capitalize<span class="token operator">&lt;</span>Y<span class="token operator">></span><span class="token operator">></span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span> <span class="token punctuation">:</span> S <span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">//foo-Bar---Baz</span>
+</code></pre>
+</details>
+
+<blockquote>
+<p>KebabCase </p>
+</blockquote>
+<p><code>FooBarBaz</code> -&gt; <code>foo-bar-baz</code></p>
+<details>
+<summary><mark>查看答案 </mark></summary>
+
+<pre class=" language-ts"><code class="language-ts">type KebabCase<span class="token operator">&lt;</span>S <span class="token keyword">extends</span> <span class="token class-name">string</span><span class="token punctuation">,</span> P <span class="token keyword">extends</span> <span class="token class-name">string</span> <span class="token operator">=</span> <span class="token string">""</span><span class="token operator">></span> <span class="token operator">=</span> 
+  S <span class="token keyword">extends</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer L<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>infer R<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span>
+    <span class="token operator">?</span> L <span class="token keyword">extends</span> <span class="token class-name">Lowercase</span><span class="token operator">&lt;</span>L<span class="token operator">></span> 
+      <span class="token operator">?</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>L<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>KebabCase<span class="token operator">&lt;</span>R<span class="token punctuation">,</span> <span class="token string">"-"</span><span class="token operator">></span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span>
+      <span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>P<span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Lowercase<span class="token operator">&lt;</span>L<span class="token operator">></span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>KebabCase<span class="token operator">&lt;</span>R<span class="token punctuation">,</span> <span class="token string">"-"</span><span class="token operator">></span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span>
+    <span class="token punctuation">:</span> S<span class="token punctuation">;</span>
+
+type b <span class="token operator">=</span> KebabCase<span class="token operator">&lt;</span><span class="token string">'foo-bar'</span><span class="token operator">></span>
 </code></pre>
 </details>
 
