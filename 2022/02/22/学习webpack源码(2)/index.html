@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>学习webpack源码(2) | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+
+    <script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+
+<script>
+    function pjax_fancybox() {
+      $(".post-content").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+        var element = document.createElement("a"); // a 标签
+        $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+        $(element).attr("href", $(this).attr("src"));
+        // console.log($(this));
+        if ($(this).attr("data-original")) {
+          $(element).attr("href", $(this).attr("data-original"));
+        }
+        $(element).attr("data-fancybox", "images");
+        var caption = "";   // 描述信息
+        if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+          $(element).attr('data-caption', $(this).attr('alt'));
+          caption = $(this).attr('alt');
+        }
+        var div = document.createElement("div");
+        $(div).addClass("fancybox");
+        $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+        // var span = document.createElement("span");
+        // $(span).addClass("image-caption");
+        // $(span).text(caption); // 加描述
+        // $(this).after(span);  // 再套一层描述
+        $(this).wrap(element);  // 最后套 a 标签
+      })
+      $(".post-content").find("img").fancybox({
+        selector: '[data-fancybox="images"]',
+        hash: false,
+        loop: false,
+        closeClick: true,
+        helpers: {
+          overlay: {closeClick: true}
+        },
+        buttons: [
+          "zoom",
+          "close"
+        ]
+      });
+    };
+    $(function () {
+      pjax_fancybox();
+    });
+  </script>
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+                    <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+                </div>
+                
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">学习webpack源码(2)</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">二月 22, 2022&nbsp;&nbsp;21:17:43</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/webpack/">webpack</a>
+                            
+                        </span>
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><p>在vscode 中创建调试文件，进行debug, 点击debug，自动创建即可</p>
+<pre class=" language-js"><code class="language-js"><span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">// 使用 IntelliSense 了解相关属性。 </span>
+  <span class="token comment" spellcheck="true">// 悬停以查看现有属性的描述。</span>
+  <span class="token comment" spellcheck="true">// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387</span>
+  <span class="token string">"version"</span><span class="token punctuation">:</span> <span class="token string">"0.2.0"</span><span class="token punctuation">,</span>
+  <span class="token string">"configurations"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+
+    <span class="token punctuation">{</span>    
+        <span class="token string">"type"</span><span class="token punctuation">:</span> <span class="token string">"node"</span><span class="token punctuation">,</span>   
+          <span class="token string">"request"</span><span class="token punctuation">:</span> <span class="token string">"launch"</span><span class="token punctuation">,</span>   
+          <span class="token string">"name"</span><span class="token punctuation">:</span> <span class="token string">"debugWebpack"</span><span class="token punctuation">,</span>   
+          <span class="token string">"program"</span><span class="token punctuation">:</span> <span class="token string">"${workspaceFolder}/bin/webpack.js"</span><span class="token punctuation">,</span>  
+          <span class="token string">"console"</span><span class="token punctuation">:</span> <span class="token string">"integratedTerminal"</span><span class="token punctuation">,</span>   
+          <span class="token string">"cwd"</span><span class="token punctuation">:</span> <span class="token string">"${workspaceFolder}"</span><span class="token punctuation">,</span>   
+          <span class="token string">"args"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>        
+            <span class="token comment" spellcheck="true">//  "${workspaceFolder}/examples/examples.js",   </span>
+            <span class="token comment" spellcheck="true">// webpack example 目录，我们选其中一个进行调试即可， 详细 example/README.md</span>
+            <span class="token string">"${workspaceFolder}/examples/commonjs/example.js"</span><span class="token punctuation">,</span>   
+        <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>接之前一篇文章, 创建<code>compiler</code></p>
+<ol>
+<li>接下来可以配合官方文档进行阅读<a href="https://webpack.docschina.org/api/compiler-hooks/" target="_blank" rel="noopener">compiler hook</a>按照官方顺序就是compiler整个生命周期</li>
+</ol>
+<h2 id="梳理-compiler-生命周期"><a href="#梳理-compiler-生命周期" class="headerlink" title="梳理 compiler 生命周期"></a>梳理 compiler 生命周期</h2><ol>
+<li>首先进行环境初始化, 即<code>compiler.hook.environment.call()</code>, 但全局搜索没有做订阅</li>
+<li>环境初始化后会到 <code>compiler.hook.afterEnvironment.call()</code>, 说明环境初始化完成， <code>IgnoringWatchFileSystem</code>, 应该是做忽略某些文件的监听</li>
+<li>从<code>lib/webpack</code> 中的 <code>new WebpackOptionsApply().process(options, compiler);</code> 这里其实是对 <code>option</code> 的配置进行plugin 的加载，且对compiler 对应周期进行注册监听事件。<br>所以这里会经历一个 <code>entryOption</code> 的周期，<br>例如：<code>entry 入口</code>, </li>
+</ol>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// 处理入口文件, SyncBailHook , 当返回为非undefined时停止往下执行</span>
+<span class="token keyword">new</span> <span class="token class-name">EntryOptionPlugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span>compiler<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 执行入口文件回调</span>
+compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>entryOption<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>options<span class="token punctuation">.</span>context<span class="token punctuation">,</span> options<span class="token punctuation">.</span>entry<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// EntryOptionPlugin</span>
+<span class="token keyword">class</span> <span class="token class-name">EntryOptionPlugin</span> <span class="token punctuation">{</span>
+    <span class="token function">apply</span><span class="token punctuation">(</span>compiler<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>entryOption<span class="token punctuation">.</span><span class="token function">tap</span><span class="token punctuation">(</span><span class="token string">"EntryOptionPlugin"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>context<span class="token punctuation">,</span> entry<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            EntryOptionPlugin<span class="token punctuation">.</span><span class="token function">applyEntryOption</span><span class="token punctuation">(</span>compiler<span class="token punctuation">,</span> context<span class="token punctuation">,</span> entry<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token comment" spellcheck="true">/** 省略其余code */</span>
+<span class="token punctuation">}</span></code></pre>
+<p>其余配置也差不多， 然后会执行<code>compiler.hooks.afterPlugins.call(compiler);</code> 说明所有的插件已经加载完毕。<br>最后调用<code>compiler.hooks.afterResolvers.call(compiler);</code> 表示compiler 中3种类型的解析器已经全部设置完成，<code>new WebpackOptionsApply().process(options, compiler);</code> 执行完毕</p>
+<ol start="4">
+<li>然后 执行 <code>compiler.hook.initialize.call()</code> </li>
+<li>最后回到 <code>lib/webpack</code> 执行 <code>compiler.run()</code></li>
+</ol>
+<h2 id="Compiler"><a href="#Compiler" class="headerlink" title="Compiler"></a>Compiler</h2><p>上面已经通过 <code>new Compiler(options.context)</code> 创建compiler, 然后调用<code>compiler.run()</code><br>进入<code>lib/compiler.js</code> 可以看到创建了多个hooks, <a href="https://zhuanlan.zhihu.com/p/100974318" target="_blank" rel="noopener">关于tapable, 我觉得这篇文章挺好</a></p>
+<ol>
+<li><code>run</code> 方法执行， 经历了两个<code>hooks (hooks.beforeRun, hooks.run)</code>, 最后执行 <code>this.compiler()</code></li>
+</ol>
+<pre class=" language-js"><code class="language-js"><span class="token function">compile</span><span class="token punctuation">(</span>callback<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">// 创建 normalFactory, 跟 contextFactory, 创建完成之后调用 hooks.normalModuleFactory.call(); hooks.contextModuleFactory.call()</span>
+  <span class="token keyword">const</span> params <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">newCompilationParams</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>beforeCompile<span class="token punctuation">.</span><span class="token function">callAsync</span><span class="token punctuation">(</span>params<span class="token punctuation">,</span> err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>compile<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">const</span> compilation <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">newCompilation</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">const</span> logger <span class="token operator">=</span> compilation<span class="token punctuation">.</span><span class="token function">getLogger</span><span class="token punctuation">(</span><span class="token string">"webpack.Compiler"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    logger<span class="token punctuation">.</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token string">"make hook"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>make<span class="token punctuation">.</span><span class="token function">callAsync</span><span class="token punctuation">(</span>compilation<span class="token punctuation">,</span> err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+      logger<span class="token punctuation">.</span><span class="token function">timeEnd</span><span class="token punctuation">(</span><span class="token string">"make hook"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+      logger<span class="token punctuation">.</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token string">"finish make hook"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>finishMake<span class="token punctuation">.</span><span class="token function">callAsync</span><span class="token punctuation">(</span>compilation<span class="token punctuation">,</span> err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+        logger<span class="token punctuation">.</span><span class="token function">timeEnd</span><span class="token punctuation">(</span><span class="token string">"finish make hook"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        process<span class="token punctuation">.</span><span class="token function">nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+          logger<span class="token punctuation">.</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token string">"finish compilation"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          compilation<span class="token punctuation">.</span><span class="token function">finish</span><span class="token punctuation">(</span>err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            logger<span class="token punctuation">.</span><span class="token function">timeEnd</span><span class="token punctuation">(</span><span class="token string">"finish compilation"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+            logger<span class="token punctuation">.</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token string">"seal compilation"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            compilation<span class="token punctuation">.</span><span class="token function">seal</span><span class="token punctuation">(</span>err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+              logger<span class="token punctuation">.</span><span class="token function">timeEnd</span><span class="token punctuation">(</span><span class="token string">"seal compilation"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+              logger<span class="token punctuation">.</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token string">"afterCompile hook"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>afterCompile<span class="token punctuation">.</span><span class="token function">callAsync</span><span class="token punctuation">(</span>compilation<span class="token punctuation">,</span> err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+                logger<span class="token punctuation">.</span><span class="token function">timeEnd</span><span class="token punctuation">(</span><span class="token string">"afterCompile hook"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+                <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> compilation<span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>2.创建 <code>NormalModuleFactory</code>, 跟 <code>contextModuleFactory</code>, 创建完成之后调用 <code>hooks.normalModuleFactory.call()</code>,<code>hooks.contextModuleFactory.call()</code><br><code>NormalModuleFactory</code> 用来生成模块的</p>
+<ol start="3">
+<li><p>之后调用 <code>hooks.beforeCompile</code>， <code>beforeCompile</code> 在<a href="https://github.com/webpack/webpack/blob/main/lib/hmr/LazyCompilationPlugin.js#L331" target="_blank" rel="noopener">LazyCompilationPlugin</a> 下注册了, 这里跟hmr 热更新相关。 同时在<a href="https://github.com/webpack/webpack/blob/main/lib/DllReferencePlugin.js#L51" target="_blank" rel="noopener">DllReferencePlugin</a>, 它是用来拆分bundle，提升构建速度的 <a href="https://webpack.docschina.org/plugins/dll-plugin/" target="_blank" rel="noopener">具体可以看这</a></p>
+</li>
+<li><p>然后调用 <code>hook.compile</code>, 在这<a href="https://github.com/webpack/webpack/blob/main/lib/DllReferencePlugin.js#L88" target="_blank" rel="noopener">DllReferencePlugin</a>, <a href="https://github.com/webpack/webpack/blob/main/lib/ExternalsPlugin.js#L29" target="_blank" rel="noopener">ExternalsPlugin</a>, <a href="https://github.com/webpack/webpack/blob/main/lib/DelegatedPlugin.js#L34" target="_blank" rel="noopener">DelegatedPlugin</a>三个文件中注册了方法</p>
+</li>
+<li><p>创建 <code>compilation</code> 实例，该实例可以用于factorizeModule, buildModule, addModule， 以及对module的依赖收集, 执行 <code>compiler.hooks.thisCompilation.call</code> 以及<br><code>compiler.hooks.compilation.call</code></p>
+</li>
+<li><p>执行<code>compiler.hooks.make</code> 正式进入到编译阶段</p>
+<ol>
+<li><p>找到 <code>tapAsync</code> 函数， 通过调用<code>addEntry</code> 添加入口文件</p>
+<pre class=" language-js"><code class="language-js">compiler<span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>make<span class="token punctuation">.</span><span class="token function">tapAsync</span><span class="token punctuation">(</span><span class="token string">"EntryPlugin"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>compilation<span class="token punctuation">,</span> callback<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+compilation<span class="token punctuation">.</span><span class="token function">addEntry</span><span class="token punctuation">(</span>context<span class="token punctuation">,</span> dep<span class="token punctuation">,</span> options<span class="token punctuation">,</span> err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+<span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+</li>
+<li><pre class=" language-js"><code class="language-js"><span class="token function">addEntry</span><span class="token punctuation">(</span>context<span class="token punctuation">,</span> entry<span class="token punctuation">,</span> optionsOrName<span class="token punctuation">,</span> callback<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">// TODO webpack 6 remove</span>
+  <span class="token keyword">const</span> options <span class="token operator">=</span>
+      <span class="token keyword">typeof</span> optionsOrName <span class="token operator">===</span> <span class="token string">"object"</span>
+          <span class="token operator">?</span> optionsOrName
+          <span class="token punctuation">:</span> <span class="token punctuation">{</span> name<span class="token punctuation">:</span> optionsOrName <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_addEntryItem</span><span class="token punctuation">(</span>context<span class="token punctuation">,</span> entry<span class="token punctuation">,</span> <span class="token string">"dependencies"</span><span class="token punctuation">,</span> options<span class="token punctuation">,</span> callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>然后 <code>_addEntryItem</code>, 会判断是否是多入口等等，然后执行<code>compilation.hooks.addEntry.call</code> 表示添加入口文件完毕, 最后执行<code>addModuleTree</code></p>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addModuleTree</span><span class="token punctuation">(</span>
+<span class="token punctuation">{</span>
+context<span class="token punctuation">,</span>
+dependency<span class="token punctuation">:</span> entry<span class="token punctuation">,</span>
+contextInfo<span class="token punctuation">:</span> entryData<span class="token punctuation">.</span>options<span class="token punctuation">.</span>layer
+  <span class="token operator">?</span> <span class="token punctuation">{</span> issuerLayer<span class="token punctuation">:</span> entryData<span class="token punctuation">.</span>options<span class="token punctuation">.</span>layer <span class="token punctuation">}</span>
+  <span class="token punctuation">:</span> undefined
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">(</span>err<span class="token punctuation">,</span> module<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>failedEntry<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>entry<span class="token punctuation">,</span> options<span class="token punctuation">,</span> err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>succeedEntry<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>entry<span class="token punctuation">,</span> options<span class="token punctuation">,</span> module<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> module<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>来看看 <code>addModuleTree</code> 函数, <code>addModuleTree</code> 里面会执行一个 <code>handleModuleCreation</code></p>
+</li>
+</ol>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">const</span> Dep <span class="token operator">=</span> <span class="token comment" spellcheck="true">/** @type {DepConstructor} */</span> <span class="token punctuation">(</span>dependency<span class="token punctuation">.</span>constructor<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 这里会找到直接找到normalModuleFactory</span>
+<span class="token keyword">const</span> moduleFactory <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>dependencyFactories<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span>Dep<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">handleModuleCreation</span><span class="token punctuation">(</span>
+         <span class="token punctuation">{</span>
+             factory<span class="token punctuation">:</span> moduleFactory<span class="token punctuation">,</span>
+             dependencies<span class="token punctuation">:</span> <span class="token punctuation">[</span>dependency<span class="token punctuation">]</span><span class="token punctuation">,</span>
+             originModule<span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+             contextInfo<span class="token punctuation">,</span>
+             context
+         <span class="token punctuation">}</span><span class="token punctuation">,</span>
+         <span class="token punctuation">(</span>err<span class="token punctuation">,</span> result<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+             <span class="token keyword">if</span> <span class="token punctuation">(</span>err <span class="token operator">&amp;&amp;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>bail<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       <span class="token comment" spellcheck="true">// error</span>
+             <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>err <span class="token operator">&amp;&amp;</span> result<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                 <span class="token function">callback</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+             <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+                 <span class="token function">callback</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+             <span class="token punctuation">}</span>
+         <span class="token punctuation">}</span>
+     <span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<ol start="5">
+<li>然后 <code>handleModuleCreation</code> 会执行 <code>factorizeModule</code>, 先不用管回调</li>
+</ol>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">factorizeModule</span><span class="token punctuation">(</span>
+ <span class="token punctuation">{</span>
+   currentProfile<span class="token punctuation">,</span>
+   factory<span class="token punctuation">,</span>
+   dependencies<span class="token punctuation">,</span>
+   factoryResult<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+   originModule<span class="token punctuation">,</span>
+   contextInfo<span class="token punctuation">,</span>
+   context
+ <span class="token punctuation">}</span><span class="token punctuation">,</span>
+ <span class="token punctuation">(</span>err<span class="token punctuation">,</span> factoryResult<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+   <span class="token comment" spellcheck="true">/** 省略部分代码， 只需要知道后续会进行 this.addModule(newModule, () => {}) */</span>
+   <span class="token keyword">const</span> newModule <span class="token operator">=</span> factoryResult<span class="token punctuation">.</span>module<span class="token punctuation">;</span>
+   <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">addModule</span><span class="token punctuation">(</span>newModule<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+     <span class="token comment" spellcheck="true">// 下面会执行模块创建以及 依赖收集</span>
+     <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleModuleBuildAndDependencies</span><span class="token punctuation">(</span>
+       originModule<span class="token punctuation">,</span>
+       module<span class="token punctuation">,</span>
+       recursive<span class="token punctuation">,</span>
+       callback
+     <span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token punctuation">}</span><span class="token punctuation">)</span>
+ <span class="token punctuation">}</span>
+<span class="token punctuation">)</span></code></pre>
+<ol start="6">
+<li><p><code>this.factorizeModule</code> 其实就是简单的将当前模块 添加到一个异步队列中</p>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// this.factorizeModule 通过new AsyncQueue 创建</span>
+<span class="token keyword">this</span><span class="token punctuation">.</span>factorizeQueue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>options<span class="token punctuation">,</span> callback<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+</li>
+<li><p><code>factorizeQueue.add</code> 它是一个异步执行 队列，当有一个任务加入到队列中，最后会执行<code>setImmediate(root._ensureProcessing);</code>,<br>但值得注意的是<code>root</code> 这个参数设计的有点巧妙，是一种父子关系, <code>this.processDependenciesQueue 的children 包含 this.addModuleQueue, this.factorizeQueue , this.buildQueue</code> 最后会执行 <code>setImmediate(root._ensureProcessing);</code> 当前root 是<code>this.processDependenciesQueue</code>。 setImmediate 会在下一次事件循环中调用</p>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">/** @type {AsyncQueue&lt;Module, Module, Module>} */</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>processDependenciesQueue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">AsyncQueue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      name<span class="token punctuation">:</span> <span class="token string">"processDependencies"</span><span class="token punctuation">,</span>
+      parallelism<span class="token punctuation">:</span> options<span class="token punctuation">.</span>parallelism <span class="token operator">||</span> <span class="token number">100</span><span class="token punctuation">,</span>
+      processor<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_processModuleDependencies<span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">/** @type {AsyncQueue&lt;Module, string, Module>} */</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>addModuleQueue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">AsyncQueue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      name<span class="token punctuation">:</span> <span class="token string">"addModule"</span><span class="token punctuation">,</span>
+      parent<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>processDependenciesQueue<span class="token punctuation">,</span>
+      getKey<span class="token punctuation">:</span> module <span class="token operator">=</span><span class="token operator">></span> module<span class="token punctuation">.</span><span class="token function">identifier</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      processor<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_addModule<span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">/** @type {AsyncQueue&lt;FactorizeModuleOptions, string, Module | ModuleFactoryResult>} */</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>factorizeQueue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">AsyncQueue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      name<span class="token punctuation">:</span> <span class="token string">"factorize"</span><span class="token punctuation">,</span>
+      parent<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>addModuleQueue<span class="token punctuation">,</span>
+      processor<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_factorizeModule<span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">/** @type {AsyncQueue&lt;Module, Module, Module>} */</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>buildQueue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">AsyncQueue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      name<span class="token punctuation">:</span> <span class="token string">"build"</span><span class="token punctuation">,</span>
+      parent<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>factorizeQueue<span class="token punctuation">,</span>
+      processor<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_buildModule<span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>ensureProcessing 会遍历当前实例的children，简单说就是遍历 addModuleQueue, factorizeQueue, buildQueue 三个AsyncQueue 然后从这三个实例的队列中找任务去执行</p>
+<pre class=" language-js"><code class="language-js"><span class="token function">_ensureProcessing</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token comment" spellcheck="true">// this = this.processDependenciesQueue,</span>
+<span class="token comment" spellcheck="true">// children 包含 this.addModuleQueue, this.factorizeQueue, this.buildQueue</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>_willEnsureProcessing <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>_queued<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>_children <span class="token operator">!==</span> undefined<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> child <span class="token keyword">of</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_children<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>_activeTasks <span class="token operator">&lt;</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_parallelism<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+              <span class="token keyword">const</span> entry <span class="token operator">=</span> child<span class="token punctuation">.</span>_queued<span class="token punctuation">.</span><span class="token function">dequeue</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+              <span class="token keyword">if</span> <span class="token punctuation">(</span>entry <span class="token operator">===</span> undefined<span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span>_activeTasks<span class="token operator">++</span><span class="token punctuation">;</span>
+              entry<span class="token punctuation">.</span>state <span class="token operator">=</span> PROCESSING_STATE<span class="token punctuation">;</span>
+              child<span class="token punctuation">.</span><span class="token function">_startProcessing</span><span class="token punctuation">(</span>entry<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>child<span class="token punctuation">.</span>_queued<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>_willEnsureProcessing<span class="token punctuation">)</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_needProcessing <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>child._startProcessing, 因为一直从入口过来， 此时的child 是factorize</p>
+<pre class=" language-js"><code class="language-js"><span class="token function">_startProcessing</span><span class="token punctuation">(</span>entry<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>beforeStart<span class="token punctuation">.</span><span class="token function">callAsync</span><span class="token punctuation">(</span>entry<span class="token punctuation">.</span>item<span class="token punctuation">,</span> err <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token comment" spellcheck="true">// error 处理</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">let</span> inCallback <span class="token operator">=</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
+      <span class="token keyword">try</span> <span class="token punctuation">{</span>
+          <span class="token comment" spellcheck="true">// compliation._addModule 或者 compliation._factorizeModule 或者 compliation._buildModule</span>
+  <span class="token comment" spellcheck="true">// 此时调用的是 compliation._factorizeModule</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_processor</span><span class="token punctuation">(</span>entry<span class="token punctuation">.</span>item<span class="token punctuation">,</span> <span class="token punctuation">(</span>e<span class="token punctuation">,</span> r<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+              inCallback <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+              <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleResult</span><span class="token punctuation">(</span>entry<span class="token punctuation">,</span> e<span class="token punctuation">,</span> r<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>inCallback<span class="token punctuation">)</span> <span class="token keyword">throw</span> err<span class="token punctuation">;</span>
+          <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleResult</span><span class="token punctuation">(</span>entry<span class="token punctuation">,</span> err<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>started<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>entry<span class="token punctuation">.</span>item<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p><code>_factorizeModule</code> 调用了 NormalModuleFactory.create<br>调用了 <code>NormalModuleFactory.hooks.beforeResolve.callAsync</code>, <code>NormalModuleFactory.hooks.factorize.callAsync</code><br>在<code>NormalModuleFactory.hooks.factorize.tapAsync</code>中调用了 <code>resolve.callAsync</code>,  在 <code>resolve.tapAsync</code> 主要目的是resolve 模块找到模块对应的<code>loader</code><br>以及loader的路径，描述文件等，这里会执行 <code>enhance-loader</code>, 并且创建 <code>parse</code> 和 <code>generator</code> 赋值到<code>resolveData.createData</code></p>
+</li>
+</ol>
+<pre class=" language-js"><code class="language-js">Object<span class="token punctuation">.</span><span class="token function">assign</span><span class="token punctuation">(</span>data<span class="token punctuation">.</span>createData<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+ layer<span class="token punctuation">:</span>
+   layer <span class="token operator">===</span> undefined <span class="token operator">?</span> contextInfo<span class="token punctuation">.</span>issuerLayer <span class="token operator">||</span> <span class="token keyword">null</span> <span class="token punctuation">:</span> layer<span class="token punctuation">,</span>
+ request<span class="token punctuation">:</span> <span class="token function">stringifyLoadersAndResource</span><span class="token punctuation">(</span>
+   allLoaders<span class="token punctuation">,</span>
+   resourceData<span class="token punctuation">.</span>resource
+ <span class="token punctuation">)</span><span class="token punctuation">,</span>
+ userRequest<span class="token punctuation">,</span>
+ rawRequest<span class="token punctuation">:</span> request<span class="token punctuation">,</span>
+ loaders<span class="token punctuation">:</span> allLoaders<span class="token punctuation">,</span>
+ resource<span class="token punctuation">:</span> resourceData<span class="token punctuation">.</span>resource<span class="token punctuation">,</span>
+ context<span class="token punctuation">:</span>
+   resourceData<span class="token punctuation">.</span>context <span class="token operator">||</span> <span class="token function">getContext</span><span class="token punctuation">(</span>resourceData<span class="token punctuation">.</span>resource<span class="token punctuation">)</span><span class="token punctuation">,</span>
+ matchResource<span class="token punctuation">:</span> matchResourceData
+   <span class="token operator">?</span> matchResourceData<span class="token punctuation">.</span>resource
+   <span class="token punctuation">:</span> undefined<span class="token punctuation">,</span>
+ resourceResolveData<span class="token punctuation">:</span> resourceData<span class="token punctuation">.</span>data<span class="token punctuation">,</span>
+ settings<span class="token punctuation">,</span>
+ type<span class="token punctuation">,</span>
+ parser<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getParser</span><span class="token punctuation">(</span>type<span class="token punctuation">,</span> settings<span class="token punctuation">.</span>parser<span class="token punctuation">)</span><span class="token punctuation">,</span>
+ parserOptions<span class="token punctuation">:</span> settings<span class="token punctuation">.</span>parser<span class="token punctuation">,</span>
+ generator<span class="token punctuation">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getGenerator</span><span class="token punctuation">(</span>type<span class="token punctuation">,</span> settings<span class="token punctuation">.</span>generator<span class="token punctuation">)</span><span class="token punctuation">,</span>
+ generatorOptions<span class="token punctuation">:</span> settings<span class="token punctuation">.</span>generator<span class="token punctuation">,</span>
+ resolveOptions
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<ol start="11">
+<li>继续执行 <code>nmf.hooks.afterResolve.callAsync</code> 和 <code>nmf.hooks.createModule.callAsync</code></li>
+</ol>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>afterResolve<span class="token punctuation">.</span><span class="token function">callAsync</span><span class="token punctuation">(</span>resolveData<span class="token punctuation">,</span> <span class="token punctuation">(</span>err<span class="token punctuation">,</span> result<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+ <span class="token keyword">const</span> createData <span class="token operator">=</span> resolveData<span class="token punctuation">.</span>createData<span class="token punctuation">;</span>
+ <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>createModule<span class="token punctuation">.</span><span class="token function">callAsync</span><span class="token punctuation">(</span>createData<span class="token punctuation">,</span> resolveData<span class="token punctuation">,</span>
+         <span class="token punctuation">(</span>err<span class="token punctuation">,</span> createdModule<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+     <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span>createModule<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       createdModule <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">NormalModule</span><span class="token punctuation">(</span>createData<span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token punctuation">}</span>
+     <span class="token comment" spellcheck="true">// SideEffectsFlagPlugin 这里做sideEffect</span>
+     createdModule <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>hooks<span class="token punctuation">.</span>module<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>
+       createdModule<span class="token punctuation">,</span>
+       createData<span class="token punctuation">,</span>
+       resolveData
+     <span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token comment" spellcheck="true">// 执行完成后调用 hooks.factorize.callAsync 回调 传入当前module 信息, 也就是factory.create 的callback 再callback 中执行AsyncQueue.handleResult</span>
+     <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">,</span> createdModule<span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<ol start="12">
+<li><p>AsyncQueue.handleResult 执行了 加进异步队列的 callback 即 6.5 的回调 addModule, 此时又做了一次6.6 之后的循环 只是改成了<code>addModule</code></p>
+</li>
+<li><p><code>addModule</code> 经过上面一轮 后执行 </p>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">_handleModuleBuildAndDependencies</span><span class="token punctuation">(</span>
+originModule<span class="token punctuation">,</span>
+module<span class="token punctuation">,</span>
+recursive<span class="token punctuation">,</span>
+callback
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+</li>
+<li><p>在 <code>_handleModuleBuildAndDependencies</code> 会执行 <code>this.buildModule</code> 再回调中会构建依赖</p>
+</li>
+</ol>
+</li>
+</ol>
+<p><img src="/2022/02/22/%E5%AD%A6%E4%B9%A0webpack%E6%BA%90%E7%A0%81(2)/2.png" alt="流程图"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/webpack/"># webpack</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/04/22/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%B8%8B%E4%BB%8Erc-tree%20%E9%87%8C%E9%9D%A2%E5%AD%A6%E5%88%B0%E4%BA%86%E4%BB%80%E4%B9%88%E4%B8%9C%E8%A5%BF/">记录一下从rc-tree 里面学到了什么东西</a>
+            
+            
+            <a class="next" rel="next" href="/2022/01/17/%E5%AD%A6%E4%B9%A0webpack%E6%BA%90%E7%A0%81/">学习webpack源码</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div>
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                网址，例如： front-matter---layout: postdate: <b mark></b>
+                                7-07-05title: [转]如何搭建基于Hexo的独立博客categories: [Dev, Hexo]tags: - Hexoauthor: name: xaoxuu avatar: https://cdn.jsdelivr.......
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
