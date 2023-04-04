@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>正则表达式 | Chow Bill&#39;s Blog</title>
+<title>AND(A,B,OR(C,D,E)) 转换 | Chow Bill&#39;s Blog</title>
 
 
 
@@ -483,7 +483,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">正则表达式</h1>
+            <h1 class="post-title">AND(A,B,OR(C,D,E)) 转换</h1>
             
                 <div class="post-meta">
                     
@@ -492,14 +492,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">六月 14, 2021&nbsp;&nbsp;23:00:00</a>
+                        Date: <a href="#">四月 4, 2023&nbsp;&nbsp;10:20:00</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E6%AD%A3%E5%88%99/">正则</a>
+                                <a href="/categories/js/">js</a>
                             
                         </span>
                     
@@ -518,239 +518,87 @@
         </header>
 
         <div class="post-content">
-            <h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><p>正则表达式是描述一种字符串匹配的模式（pattern），可以用来检查一个串是否含有某种子串、将匹配的子串替换或者从某个串中取出符合某个条件的子串等。</p>
-<p>我们判断字符串是否含有子串，我们一般会用到<code>indexOf</code> 还有<code>includes</code>方法, 比如 <code>&quot;abc&quot;.includes(&quot;ab&quot;)</code> 或者 <code>&quot;abc&quot;.indexOf(ab)</code>, 那么这两个有什么区别？</p>
-<p><strong>includes 返回的是Boolean值;</strong></p>
-<p><strong>而indexOf 返回的是子串在字符串首次出现的下标，若没有出现返回-1</strong></p>
-<p>除了以上两种方法，我们还有正则表达式，<code>/ab/.test(&quot;abc&quot;)</code></p>
-<h3 id="先来看几个常用特殊的字符"><a href="#先来看几个常用特殊的字符" class="headerlink" title="先来看几个常用特殊的字符"></a>先来看几个常用特殊的字符</h3><ol>
-<li><code>*</code> 代表前面的字符<code>0次</code>或<code>多次</code>， 例子 <code>/ac*/.test(&quot;abc&quot;)</code></li>
-</ol>
-<details>
-<summary><mark>说明</mark></summary>
-
-<p>ac<em>能匹配“a”，也能匹配“ac”以及“acc”。</em>等价于{0,}。</p>
-</details>
-
-<ol start="2">
-<li><code>+</code> 代表前面的字符<code>1次</code>或<code>多次</code>， <code>/ac+/.test(&quot;abc&quot;)</code></li>
-</ol>
-<details>
-<summary><mark>说明 </mark></summary>
-
-<p>ac+ 能匹配“ac”以及“acc”, 但不能匹配”a”, +等价于{1,}。</p>
-</details>
-
-<ol start="3">
-<li><code>?</code> 代表前面的字符<code>0次</code>或<code>1次</code>,   例子 <code>/ac?/.test(&quot;abc&quot;)</code><br>例如，“do(es)?”可以匹配“do”或“does”。?等价于{0,1}。</li>
-<li><code>/d</code> 匹配数字</li>
-<li><code>\w</code> 匹配字母、数字、下划线。等价于 [A-Za-z0-9_]</li>
-<li><code>\s</code> 匹配所有空白符，包括换行</li>
-<li><code>\S</code> 匹配非空白符，不包括换行。</li>
-<li><code>[\s\S]</code> 匹配所有</li>
-</ol>
-<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><h4 id="字符组"><a href="#字符组" class="headerlink" title="字符组 []"></a>字符组 []</h4><p><strong>字符组</strong>：允许匹配一组可能出现的字符。比如 [Jj], 那么既可以匹配<code>J</code>，也能匹配<code>j</code>, 例子<br><code>/[Jj]ava[Ss]cript/.test(&quot;JavaScript&quot;)</code></p>
-<h4 id="区间"><a href="#区间" class="headerlink" title="区间"></a>区间</h4><p>在字符组中用<code>-</code>代表区间，即<code>[0-9]</code>表示的是<code>[0123456789]</code>, 同理<code>[a-z]</code>表示的是<code>a到z</code>任意的数字</p>
-<h4 id="字符转义"><a href="#字符转义" class="headerlink" title="字符转义"></a>字符转义</h4><p>上面所说，<code>[]</code>表示字符组， 而<code>-</code> 表示区间连接符，那么如果要匹配<code>[]</code> 那么就需要使用转义符 <code>\</code>，</p>
-<details>
-<summary><mark>答案 </mark></summary>
-
-<p><code>/\[\]/.test(&quot;[]&quot;)</code></p>
-</details>
-
-<h4 id="取反"><a href="#取反" class="headerlink" title="取反 [^]"></a>取反 [^]</h4><p><code>true</code> 取反 就是<code>false</code>, 在正则这里的取反是指 <strong>不会出现的字符</strong></p>
-<p>比如： 匹配不包含数字的字符串 <code>/[^0-9]/.test(&quot;abc&quot;)</code>,</p>
-<p><strong>注意：^符号要在中括号内，不然^代表的是匹配以^后跟随的的字符开头的字符串</strong>，<code>/^gg/.test(&quot;gg = good game&quot;)</code>, 这里表示的是以<code>gg开头</code>的匹配式。</p>
-<p>这里顺带说一下 <code>$</code>, 表示以<code>$</code>前面的字符组做结尾的匹配式 <code>/world$/.test(&quot;hello world&quot;)</code></p>
-<details>
-    <summary>不含小写字母的数据</summary>
-
-<pre><code>`/[^a-z]/.test(&quot;0123123ADFADJFKL&quot;)`</code></pre></details>
-
-<h4 id="重复"><a href="#重复" class="headerlink" title="重复"></a>重复</h4><p>在一个字符组后加上<code>{N}</code> 就可以表示在它之前的字符组出现<code>N</code>次。例如 <code>/\d{3}/</code> ,表示数字重复3次</p>
-<p>假设要匹配 电话号码，那么应该怎么做， 电话号码的格式是<code>020-12345678</code></p>
-<details>
-    <summary>匹配电话号码</summary>
-
-<pre><code>`/\d{3}-\d{8}/`</code></pre></details>
-
-
-<h5 id="重复区间-M-N"><a href="#重复区间-M-N" class="headerlink" title="重复区间 {M,N}"></a>重复区间 {M,N}</h5><p>可能有时候，我们不知道具体要匹配字符组要重复的次数，比如身份证有15位也有18位的。那么这时候就可以用重复区间， </p>
-<p><code>语法：{M,N}，M是下界而N是上界。</code></p>
-<blockquote>
-<p>练习 匹配所有的手机号</p>
-</blockquote>
-<pre class=" language-tsx"><code class="language-tsx">
-我们知道手机号必须为11位数，并符合下列几个规则：
-
-第一位数字必须以1开头，第二位数字可以是[3,4,5,7,8]中的任意一个，后面9个数是[0-9]中的任意一个数字</code></pre>
-<details>
-    <summary>匹配所有的手机号</summary>
-
-<pre><code>`/1[34578]\d{9}/`</code></pre></details>
-
-
-<h3 id="贪婪匹配与非贪婪匹配"><a href="#贪婪匹配与非贪婪匹配" class="headerlink" title="贪婪匹配与非贪婪匹配"></a>贪婪匹配与非贪婪匹配</h3><p>贪婪模式：在整个表达式匹配成功的前提下，尽可能多的匹配 (<code>*</code>)；</p>
-<p>非贪婪模式：在整个表达式匹配成功的前提下，尽可能少的匹配 (<code>?</code>)；</p>
-<p>例子： <code>&lt;div&gt;12312&lt;/div&gt;&lt;div&gt;hello world&lt;/div&gt;</code></p>
-<p>贪婪匹配： <code>&quot;&lt;div&gt;12312&lt;/div&gt;&lt;div&gt;hello world&lt;/div&gt;&quot;.match(/&lt;div&gt;.*&lt;/div&gt;/)</code>, 会匹配到 <code>&lt;div&gt;12312&lt;/div&gt;&lt;div&gt;hello world&lt;/div&gt;</code></p>
-<p>非贪婪匹配： <code>&quot;&lt;div&gt;12312&lt;/div&gt;&lt;div&gt;hello world&lt;/div&gt;&quot;.match(/&lt;div&gt;.*?&lt;/div&gt;/)</code>, 会匹配到 <code>&lt;div&gt;12312&lt;/div&gt;</code>, 这是因为非贪婪匹配，匹配到第一个子串就结束了,不再往后匹配了</p>
-<h3 id="分组"><a href="#分组" class="headerlink" title="分组"></a>分组</h3><p><strong>分组：使用的是（），分组一般用在提取匹配的字符串的子串</strong>。 举个例子： <code>020-12345678</code> 这是我们的电话号码，但我想提取他的<code>区号</code>和<code>真实的电话号码</code>，那么我们只需要<code>/(\d{3})-(\d{8})/</code>即可</p>
-<p><strong>练习1：</strong> 如果我想要提取<code>&lt;div&gt;hello world&lt;/div&gt;</code></p>
-<details>
-    <summary> 答案</summary>
-
-<pre><code>&quot;&lt;div&gt;hello world&lt;/div&gt;&quot;.match(/&lt;div&gt;(.*?)&lt;\/div&gt;/)
-
-比较：
-1. &lt;div&gt;.*?&lt;/div&gt;
-2. &lt;div&gt;(.*?)&lt;/div&gt;</code></pre></details>
-
-<p><strong>练习2：</strong> 如果 我们拥有日期的格式为 <code>2020-05-20</code> 或者 <code>2020 05 20</code> 或者 <code>2020/05/20</code> 这样的格式，我们想要获取他的<code>年月日</code> 应该怎么写</p>
-<details>
-    <summary> 答案</summary>
-    /(\d{4})[\-\s\/](\d{2})[\-\s\/](\d{2})/
-
-<pre><code>测试一下
-
-&quot;2020-05-20&quot;.match(/(\d{4})[\-\s\/](\d{2})[\-\s\/](\d{2})/)
-
-中间分隔符是[\-\s\/], 我们换成[\s\S]是否也可以？</code></pre></details>
-
-
-<p>那如果日期的格式是 2020-5-20 或者是 2021-2-2 那应该怎么改造他</p>
-<details>
-    <summary> 答案</summary>
-    /(\d{4})[-](\d{1,2})[-](\d{1,2})/
-
-</details>
-
-<h3 id="非捕获分组"><a href="#非捕获分组" class="headerlink" title="非捕获分组"></a>非捕获分组</h3><p>有时候，我们并不需要捕获某个分组的内容，但是又想使用分组的特性。即我不要这个分组。<br><strong>非捕获分组： (?:表达式)</strong></p>
-<p>例子： 现在有 电话号码 <code>020-12345678</code> 或者<code>tel:12345678</code>, 我只要要他的电话号码，那么<code>(?:\d{3}|tel)[-:](\d{8})</code></p>
-<h3 id="分组回溯引用"><a href="#分组回溯引用" class="headerlink" title="分组回溯引用"></a>分组回溯引用</h3><p>分组回溯引用的意思就是，我能使用之前匹配的分组, 用<code>\1</code>表示第一个分组， <code>\2</code>表示第二个分组，如此类推</p>
-<p>例如，要匹配一段 HTML 代码，比如：<code>&lt;font&gt;hello world&lt;/font&gt;</code>，我们会写成 <code>/&lt;\w+&gt;.*?&lt;\/\w+&gt;/</code>, 这样能匹配<code>&lt;font&gt;hello world&lt;/font&gt;</code>， 但是如果数据改成这样：<code>&lt;font&gt;hello world&lt;/bar&gt;</code>, <code>font</code> 和 <code>bar</code> 不是一对正常的标签，所以上面的表达式不太正确， 这个时候就可以使用<strong>分组回溯引用</strong>, <code>/&lt;(\w+)&gt;.*?&lt;\/\1&gt;/</code></p>
-<p><strong>练习：</strong> 如果要匹配符合 <code>ab ba</code> 这种关系的单词, 应该怎么写?</p>
-<p>匹配<code>abba</code>, <code>asffs</code></p>
-<details>
-    <summary> 答案</summary>
-    (\w+)(\w+)\2\1
-
-</details>
-
-<h3 id="正向先行断言"><a href="#正向先行断言" class="headerlink" title="正向先行断言"></a>正向先行断言</h3><p><strong>正向先行断言</strong>：<code>(?=表达式)</code>，指在某个位置向右看，表示所在位置右侧必须能匹配表达式，但匹配的表达式不会出现在结果组里面</p>
-<p>例如：</p>
-<p>我喜欢你 我喜欢 我喜欢我 喜欢 喜欢你</p>
-<p>如果要取出<code>喜欢</code>两个字，要求这个喜欢后面有你，这个时候就要这么写：<code>喜欢(?=你)</code>，这就是正向先行断言。</p>
-<p>看这段正则表达式<code>(?=.*?[a-z])(?=.*?[A-Z]).+</code>, 这段正则能够匹配<strong>包含至少一个大小写字母的字符串</strong>， 把正则拆开就是 </p>
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一天，朋友问我 <code>AND(A,B,OR(C,D,E))</code> 该怎么转换成 <code>A&amp;B&amp;(C|D|E)</code>, 当时回复他用栈就可以了吧，后来自己实现了一下，<br>才发现没这么简单。下面是我实现的思路：</p>
 <ul>
-<li><code>(?=)</code> 说明是<code>后面必须是什么东西</code>，</li>
-<li><code>.*?</code> 表示 <code>任意东西</code></li>
-<li><code>[a-z]</code> 表示 <code>a-z</code> 的小写字母</li>
+<li>先把符号入栈，这里的符号指的是 <code>AND</code> 或者是 <code>OR</code> 转换成 <code>&amp;</code> 或 <code>|</code>, 我们每次拿栈顶的符号进行括号内的转换就行了</li>
+<li>遇到<code>（</code> 就将<code>里面的值</code> 加进数组中，遇到 <code>)</code>就将<code>这个数组</code>入栈， 我们称这个叫数据栈</li>
+<li>最后将数据栈与符号栈结合</li>
 </ul>
-<p>结合就是 必须包含<code>a到z</code>的任意字符串</p>
-<blockquote>
-<p>练习: 密码强度验证规则如下:</p>
-</blockquote>
-<ul>
-<li>至少一个大写字母</li>
-<li>至少一个小写字母</li>
-<li>至少一个数字</li>
-<li>至少8个字符</li>
-</ul>
-<details>
-    <summary> 答案</summary>
-    /(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[0-9]).{8}/
+<p>以下是完整代码：</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// console.log(convertString('AND(A,B,OR(C,D,E))')); // "A&amp;B&amp;(C|D|E)"我想实现这个convertstring有什么好的思路吗</span>
+<span class="token keyword">function</span> <span class="token function">merge</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">function</span> <span class="token function">mergeExpr</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> sep<span class="token punctuation">,</span> level<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>arr<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token string">''</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">const</span> target <span class="token operator">=</span> arr<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    <span class="token keyword">const</span> current <span class="token operator">=</span> target <span class="token operator">+</span> <span class="token punctuation">(</span>arr<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">?</span> sep <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> current <span class="token operator">+</span> <span class="token punctuation">(</span>arr<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">?</span> <span class="token string">'('</span> <span class="token operator">+</span> <span class="token function">mergeExpr</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> b<span class="token punctuation">[</span>level <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> level <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">')'</span> <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">mergeExpr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
 
-</details>
+<span class="token keyword">const</span> convertString <span class="token operator">=</span> <span class="token punctuation">(</span>string<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> length <span class="token operator">=</span>  string<span class="token punctuation">.</span>length
 
-<h3 id="反向先行断言"><a href="#反向先行断言" class="headerlink" title="反向先行断言"></a>反向先行断言</h3><p><strong>反向先行断言</strong>：<code>(?!表达式)</code>的作用是保证右边不能出现某字符。</p>
-<p>用上面的例子就是，如果要取出<code>喜欢</code>两个字，<strong>要求这个喜欢后面没有你</strong>，这个时候就要这么写：<code>喜欢(?!你)</code>，这就是反向先行断言。</p>
-<p>我觉得：正向先行断言跟反向先行断言基本类似，<strong>只是一个取反的操作</strong></p>
-<blockquote>
-<p>练习： 排除qq邮箱</p>
-</blockquote>
-<details>
-    <summary> 答案</summary>
-    /@(?!qq).*/
+  <span class="token keyword">const</span> MAP <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">'AND'</span><span class="token punctuation">:</span> <span class="token string">'&amp;'</span><span class="token punctuation">,</span>
+    <span class="token string">'OR'</span><span class="token punctuation">:</span> <span class="token string">'|'</span>
+  <span class="token punctuation">}</span>
 
-<pre><code>@后面没有qq</code></pre></details>
+  <span class="token comment" spellcheck="true">// 记录符号</span>
+  <span class="token keyword">const</span> stack1 <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
 
-<blockquote>
-<p>用正向现行断言以及反向现行断言 千分位格式化数字</p>
-</blockquote>
-<p><code>&quot;100000&quot;.replace(/\B(?=(\d{3})+(?!\d))/g, &#39;,&#39;)</code></p>
-<p>解析: <code>/\B(?=(\d{3})+(?!\d))</code></p>
-<ul>
-<li><code>\B</code>, 首先先理解 <code>\b</code>, 在字符串中 <code>&quot;here is a word&quot;</code>, 在这个字符串中其实用很多<code>\b</code>, 就是单词与单词之间有<code>\b</code>，所以如果用 <code>/\bhere\b/</code> 可以匹配到<code>here</code>这个单词,但如果字符串是<code>hereisaword</code>, 这样就匹配不了<code>here</code>了，我们可以简单是想象成<strong>空格符</strong>。<br><code>\B</code>是只非字间, 和 <code>\d</code>与<code>\D</code>, <code>\w</code> 与 <code>\W</code> 的取反关系一样</li>
-<li><code>(?=(\d{3}))</code>: 先分组，3个数字为一组，加正向先行断言也就是 <strong>必须包含3个数字为一组的字符串</strong></li>
-<li><code>+</code> 一次或多次</li>
-<li><code>(?!\d)</code>: 反向先行断言，<strong>后面必须不能包含数字</strong></li>
-<li>结合就是 <code>3个数字为一组的子串后面必须没有数字</code></li>
-</ul>
-<h3 id="正向后行断言"><a href="#正向后行断言" class="headerlink" title="正向后行断言"></a>正向后行断言</h3><p>先行断言和后行断言只有一个区别，即<strong>先行断言从左往右看，后行断言从右往左看。</strong></p>
-<p><strong>正向后行断言</strong>：<code>(?&lt;=表达式)</code>，指在某个位置向左看，表示所在位置左侧必须能匹配表达式</p>
-<p>例如：如果要取出<code>喜欢</code>两个字，要求<strong>喜欢的前面有我，后面有你</strong>，这个时候就要这么写：<code>(?&lt;=我)喜欢(?=你)</code>。</p>
-<h3 id="反向后行断言"><a href="#反向后行断言" class="headerlink" title="反向后行断言"></a>反向后行断言</h3><p><strong>反向后行断言</strong>：<code>(?&lt;!表达式)</code>，指在某个位置向左看，表示所在位置左侧不能匹配表达式</p>
-<p>用上面的例子就是， 我喜欢你， 喜欢前面没有我</p>
-<p>例子： 匹配一个 $ 符号: <code>(?&lt;!\$)\$[^\$]*\$(?!.)</code></p>
-<p>解析： </p>
-<ul>
-<li><code>(?&lt;!\$)\$</code>: <code>$</code> 前面没有<code>$</code></li>
-<li><code>\$(?!$)</code>: <code>$</code> 的后面没有<code>$</code></li>
-<li><code>[^\$]*</code>: 除了<code>$</code> 的任意字符</li>
-</ul>
-<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><ul>
-<li>日期转化, 获取年月日，时分秒</li>
-<li>获取url中的参数</li>
-<li>trim() 函数</li>
-<li>模板</li>
-</ul>
-<pre class=" language-tsx"><code class="language-tsx">function getUrlParams(url) {
-    const pattern = new RegExp(/(\w+)=(\w+)/, 'gi')
-    let res = {};
-    str.replace(reg, (match, p1, p2) => {
-        res[p1] = p2;
-        return `${p1}=${p2}`
-    })
-    return res;
-}
+  <span class="token comment" spellcheck="true">//记录数据， 每一个（） 里面的数据 都是一个数组， 所以他是一个二维数组</span>
+  <span class="token keyword">const</span> stack2 <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
 
-getUrlParams("https://www.baidu.com?username=admin&password=88888888&code=1234")</code></pre>
-<blockquote>
-<p>trim()</p>
-</blockquote>
-<pre class=" language-tsx"><code class="language-tsx">function trim(str, type: "left" | "right" | "both" | "all") {
-    if (type === 'left') {
-        return str.replace(/(^\s*)/g, "");
-    }
-    if (type === 'right') {
-        return str.replace(/(\s*$)/g, "")
-    }
-    if (type === 'both') {
-        return str.replace(/(^\s*)|(\s*$)/g, ""); 
-    }
-    return str.replace(/(\s*)/g, "");
-}</code></pre>
-<blockquote>
-<p>简易模板引擎</p>
-</blockquote>
-<pre class=" language-tsx"><code class="language-tsx">
-const data = {name: 'Bill', age: 111};
-const template = `
-    <div>
-        <p>my name is {{name}}</p>
-        <p>年龄 {{age}}</p>
-    </div>
-`
-function generate(template, mapData) {
-    const reg = new RegExp(/\{\{(.*?)\}\}/, "g");
-    const res = template.replace(reg, (match, p1) => mapData[p1])
-    return res;
-}
-const a = generate(template, data);
-document.body.innerHTML += a
+  <span class="token comment" spellcheck="true">// 表示栈中的层级 没遇到一个（ 就加一， 遇到 ） 就减一</span>
+  <span class="token keyword">let</span> level <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token keyword">let</span> tempString <span class="token operator">=</span> <span class="token string">''</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> nextChar <span class="token operator">=</span>  string<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span>
+    <span class="token keyword">const</span> currentChar <span class="token operator">=</span>  string<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>currentChar <span class="token operator">===</span> <span class="token string">'('</span> <span class="token operator">||</span> currentChar <span class="token operator">===</span> <span class="token string">','</span> <span class="token operator">||</span> currentChar <span class="token operator">===</span> <span class="token string">')'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">continue</span>
+    <span class="token punctuation">}</span>
+    tempString <span class="token operator">=</span> tempString <span class="token operator">+</span> currentChar
+
+    <span class="token comment" spellcheck="true">// 如果下一个是字母 是 （  那么就是一个完整的字符串, 也就是 AND 或者 OR</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      level <span class="token operator">=</span> level <span class="token operator">+</span> <span class="token number">1</span>
+      stack2<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      stack1<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>MAP<span class="token punctuation">[</span>tempString<span class="token punctuation">]</span><span class="token punctuation">)</span>
+      tempString <span class="token operator">=</span> <span class="token string">''</span>
+      <span class="token keyword">continue</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">','</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> topData <span class="token operator">=</span> stack2<span class="token punctuation">[</span>level<span class="token punctuation">]</span>
+      topData<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>tempString<span class="token punctuation">)</span>
+      tempString <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">')'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> topData <span class="token operator">=</span> stack2<span class="token punctuation">[</span>level<span class="token punctuation">]</span>
+      topData<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>tempString<span class="token punctuation">)</span>
+      tempString <span class="token operator">=</span> <span class="token string">''</span>
+      level <span class="token operator">=</span> level <span class="token operator">-</span> <span class="token number">1</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">const</span> k <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> stack1<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> character <span class="token operator">=</span> stack1<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+    k<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>stack2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>character<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">merge</span><span class="token punctuation">(</span>k<span class="token punctuation">,</span> stack1<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,OR(C,D,E,AND(F,G)))'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B,C),D,E)'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> c <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,J,OR(C,D,E,AND(F,G),K))'</span><span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span>
 </code></pre>
-<p>…完</p>
 
         </div>
 
@@ -769,7 +617,7 @@ document.body.innerHTML += a
                 <span class="tag">
                     
                     
-                        <a href="/tags/%E6%AD%A3%E5%88%99/"># 正则</a>
+                        <a href="/tags/js/"># js</a>
                     
                         
                 </span>
@@ -806,10 +654,8 @@ document.body.innerHTML += a
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2021/06/23/%E7%B3%BB%E7%BB%9F%E5%91%BD%E4%BB%A4%E8%A1%8C%E4%BB%A3%E7%90%86/">系统命令行代理</a>
             
-            
-            <a class="next" rel="next" href="/2021/04/08/git/">git 操作</a>
+            <a class="next" rel="next" href="/2023/02/14/taro%20%E5%8D%87%E7%BA%A7%E9%81%87%E8%A7%81%E7%9A%84%E5%9D%91/">taro 升级遇见的坑</a>
             
         </section>
 
