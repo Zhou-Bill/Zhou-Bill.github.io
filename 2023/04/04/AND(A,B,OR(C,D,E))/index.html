@@ -599,6 +599,80 @@ console<span class="token punctuation">.</span><span class="token function">log<
 console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span>
 console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span>
 </code></pre>
+<h2 id="第二版"><a href="#第二版" class="headerlink" title="第二版"></a>第二版</h2><p>上面那版是有bug， 以下这一版是通过 通过递归的操作， 获取括号内的内容， 进行操作，如果还有括号，那么继续进行递归</p>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">convertString</span><span class="token punctuation">(</span>string<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> MAP <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">'AND'</span><span class="token punctuation">:</span> <span class="token string">'&amp;'</span><span class="token punctuation">,</span>
+    <span class="token string">'OR'</span><span class="token punctuation">:</span> <span class="token string">'|'</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">calculate</span><span class="token punctuation">(</span>string<span class="token punctuation">,</span> character<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> length <span class="token operator">=</span> string<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> res <span class="token operator">=</span> <span class="token string">''</span> 
+    <span class="token keyword">let</span> tempString <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">let</span> tempCharacter <span class="token operator">=</span> character
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> currentChar <span class="token operator">=</span> string<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> nextChar <span class="token operator">=</span> string<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token punctuation">;</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>currentChar <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> j <span class="token operator">=</span> i<span class="token punctuation">;</span>
+        <span class="token keyword">let</span> cnt <span class="token operator">=</span> <span class="token number">0</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span>i <span class="token operator">&lt;</span> length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>string<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token operator">++</span>cnt<span class="token punctuation">;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>string<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token string">')'</span><span class="token punctuation">)</span> <span class="token operator">--</span>cnt<span class="token punctuation">;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>cnt <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        res <span class="token operator">+</span><span class="token operator">=</span>  <span class="token string">'('</span> <span class="token operator">+</span> <span class="token function">calculate</span><span class="token punctuation">(</span>string<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>j <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">,</span> tempCharacter<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">')'</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 如果递归后，后面仍然有其他内容，那么添加上当前的 符号</span>
+        res <span class="token operator">+</span><span class="token operator">=</span> i <span class="token operator">&lt;</span> length <span class="token operator">-</span> <span class="token number">1</span> <span class="token operator">?</span> character <span class="token punctuation">:</span> <span class="token string">''</span>
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+        tempCharacter <span class="token operator">=</span> character
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>currentChar <span class="token operator">===</span> <span class="token string">','</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      tempString <span class="token operator">+</span><span class="token operator">=</span> currentChar<span class="token punctuation">;</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        tempCharacter <span class="token operator">=</span> MAP<span class="token punctuation">[</span>tempString<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">','</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        res <span class="token operator">+</span><span class="token operator">=</span> tempString <span class="token operator">+</span> tempCharacter
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">')'</span> <span class="token operator">||</span> <span class="token keyword">typeof</span> nextChar <span class="token operator">===</span> <span class="token string">'undefined'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        res <span class="token operator">+</span><span class="token operator">=</span> tempString
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> res
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">const</span> final <span class="token operator">=</span> <span class="token function">calculate</span><span class="token punctuation">(</span>string<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> final<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,OR(C,D,E,AND(F,G)))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> e <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B,OR(C,D,E,AND(F,G))),I,OR(AND(A,B,C),D,E))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B,C),D,E)'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> d <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B),AND(C,D))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> c <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,J,OR(C,D,E,AND(F,G),K))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+</code></pre>
 
         </div>
 
