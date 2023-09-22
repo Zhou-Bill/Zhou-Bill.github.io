@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>原型与继承 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+
+    <script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+
+<script>
+    function pjax_fancybox() {
+      $(".post-content").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+        var element = document.createElement("a"); // a 标签
+        $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+        $(element).attr("href", $(this).attr("src"));
+        // console.log($(this));
+        if ($(this).attr("data-original")) {
+          $(element).attr("href", $(this).attr("data-original"));
+        }
+        $(element).attr("data-fancybox", "images");
+        var caption = "";   // 描述信息
+        if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+          $(element).attr('data-caption', $(this).attr('alt'));
+          caption = $(this).attr('alt');
+        }
+        var div = document.createElement("div");
+        $(div).addClass("fancybox");
+        $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+        // var span = document.createElement("span");
+        // $(span).addClass("image-caption");
+        // $(span).text(caption); // 加描述
+        // $(this).after(span);  // 再套一层描述
+        $(this).wrap(element);  // 最后套 a 标签
+      })
+      $(".post-content").find("img").fancybox({
+        selector: '[data-fancybox="images"]',
+        hash: false,
+        loop: false,
+        closeClick: true,
+        helpers: {
+          overlay: {closeClick: true}
+        },
+        buttons: [
+          "zoom",
+          "close"
+        ]
+      });
+    };
+    $(function () {
+      pjax_fancybox();
+    });
+  </script>
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+                    <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+                </div>
+                
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">原型与继承</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">六月 1, 2020&nbsp;&nbsp;17:10:32</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/js/">js</a>
+                            
+                        </span>
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="prototype"><a href="#prototype" class="headerlink" title="prototype"></a>prototype</h2><p>我们知道每个函数都有一个<strong>prototype</strong>指向他的原型对象。<br>我们可以这么理解： 每个对象在创建时就与另一个对象产生关联，其实就是对另一个对象的引用。而js 再找<strong>对象属性</strong>时会顺着原型链一直往上找，直到无法找到为止</p>
+<p>来看一下</p>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Person</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 控制台打印一下， => 是结果</span>
+Person<span class="token punctuation">.</span>prototype  <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span> constructor<span class="token punctuation">:</span> f <span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 而 Person.prototype.constructor 又指向与构造函数自己</span>
+Person<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>constructor <span class="token operator">==</span> Person  <span class="token comment" spellcheck="true">// true</span></code></pre>
+<p>用下图表示：<br><img src="https://i.loli.net/2020/06/02/5nJ2Tr4xRo6Wsk3.png" alt="1591078556.jpg"></p>
+<h2 id="proto"><a href="#proto" class="headerlink" title="proto"></a><strong>proto</strong></h2><p>每个对象都有一个<code>__proto__</code>属性，除了null外，而这个属性又指向他的原型对象</p>
+<p>验证一下</p>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Person</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> person <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Person</span><span class="token punctuation">(</span><span class="token string">"Bill"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 控制台打印一下， person.__proto__</span>
+person<span class="token punctuation">.</span>__proto__ <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span> constructor<span class="token punctuation">:</span> f <span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 我们从上面[prototype]看 Person.prototype 也是指向 { constructor: f }, 那么他们是否是同一个东西呢?</span>
+person<span class="token punctuation">.</span>__proto__ <span class="token operator">==</span> Person<span class="token punctuation">.</span>prototype   <span class="token comment" spellcheck="true">// 结果是 true 的</span>
+
+<span class="token comment" spellcheck="true">// 上面一样的话，那么</span>
+person<span class="token punctuation">.</span>__proto__<span class="token punctuation">.</span>contructor <span class="token operator">==</span> Person <span class="token comment" spellcheck="true">// true</span></code></pre>
+<p>用图表示一下就是</p>
+<p><img src="https://i.loli.net/2020/06/02/ZjH7Ty2tclun65e.png" alt="1591082949_1_.jpg"></p>
+<h2 id="new-操作符"><a href="#new-操作符" class="headerlink" title="new 操作符"></a>new 操作符</h2><blockquote>
+<p>这里解释一下new 操作符，其实跟原型有关</p>
+</blockquote>
+<p>首先搞清楚<code>new</code> 做了什么</p>
+<ul>
+<li>创建对象</li>
+<li>将对象的原型指向函数的原型</li>
+<li>改变 <code>this</code> 上下文</li>
+<li>返回这个对象</li>
+</ul>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">newObj</span><span class="token punctuation">(</span>fn<span class="token punctuation">,</span> <span class="token operator">...</span>args<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    obj<span class="token punctuation">.</span>__proto__ <span class="token operator">=</span> fn<span class="token punctuation">.</span>prototype<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> res <span class="token operator">=</span> fn<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> <span class="token operator">...</span>args<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">let</span> isObject <span class="token operator">=</span> <span class="token keyword">typeof</span> res <span class="token operator">===</span> <span class="token string">'object'</span> <span class="token operator">&amp;&amp;</span> <span class="token keyword">typeof</span> res <span class="token operator">!==</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token keyword">let</span> isFunction <span class="token operator">=</span> <span class="token keyword">typeof</span> res <span class="token operator">===</span> <span class="token string">'function'</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> isObject <span class="token operator">||</span> isFunction <span class="token operator">?</span> res <span class="token punctuation">:</span> obj<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">// 这里其实可以直接返回obj</span>
+    <span class="token comment" spellcheck="true">// 但防止 fn 这个方法直接返回this, 以下这种情况</span>
+
+    <span class="token comment" spellcheck="true">// function fn(name) {</span>
+    <span class="token comment" spellcheck="true">//     this.name = name;</span>
+    <span class="token comment" spellcheck="true">//     return this;</span>
+    <span class="token comment" spellcheck="true">// }</span>
+<span class="token punctuation">}</span> 
+
+<span class="token keyword">function</span> <span class="token function">Person</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// 测试一下</span>
+person <span class="token operator">=</span> <span class="token function">newObj</span><span class="token punctuation">(</span>Person<span class="token punctuation">,</span> <span class="token string">"Bill"</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// 打印一下 person</span>
+<span class="token comment" spellcheck="true">// Person {name: Bill}</span></code></pre>
+<h2 id="Fn-prototype-proto"><a href="#Fn-prototype-proto" class="headerlink" title="Fn.prototype.proto"></a>Fn.prototype.<strong>proto</strong></h2><ul>
+<li>我们说<strong>Fn.prototype</strong> 是一个原型对象，我们上面说只要是对象都有<code>__proto__</code>, 那么<code>Fn.prototype.__proto</code>指向的是什么呢？</li>
+</ul>
+<p>答案是： <code>Object.prototype</code></p>
+<pre class=" language-js"><code class="language-js">Object<span class="token punctuation">.</span>prototype <span class="token operator">==</span> Person<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>__proto__  <span class="token comment" spellcheck="true">// true</span></code></pre>
+<p>所以有了下图</p>
+<p><img src="https://i.loli.net/2020/06/02/1g8zioGeFZwuf6n.png" alt="1591086668_1_.jpg"></p>
+<p>到此原型基本已经讲完了</p>
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>下面写继承</p>
+<h3 id="原型链继承"><a href="#原型链继承" class="headerlink" title="原型链继承"></a>原型链继承</h3><pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>role <span class="token operator">=</span> <span class="token string">"parent"</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+
+Parent<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>getRole <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>role
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">Child</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name
+<span class="token punctuation">}</span>
+
+Child<span class="token punctuation">.</span>prototype <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+Child<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>getName <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> children <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Child</span><span class="token punctuation">(</span><span class="token string">"admin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+children<span class="token punctuation">.</span><span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+children<span class="token punctuation">.</span><span class="token function">getRole</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> parent <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>parent<span class="token punctuation">.</span>role<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// parent</span>
+
+Child<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token string">"123"</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>parent<span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// "undefined"</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>children<span class="token punctuation">.</span>value<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// “123”</span>
+
+<span class="token comment" spellcheck="true">// 以下是原型链的缺点</span>
+<span class="token keyword">var</span> children2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Child</span><span class="token punctuation">(</span><span class="token string">"child2"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>children<span class="token punctuation">.</span>list<span class="token punctuation">,</span> children2<span class="token punctuation">.</span>list<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [1,2,3], [1,2,3,4]</span>
+children<span class="token punctuation">.</span>list<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>children<span class="token punctuation">.</span>list<span class="token punctuation">,</span> children2<span class="token punctuation">.</span>list<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [1,2,3,4], [1,2,3,4]</span></code></pre>
+<p>看下图</p>
+<p><img src="https://i.loli.net/2020/06/02/XJg9vL2CWi5FKRU.png" alt="1591092645_1_.jpg"></p>
+<ul>
+<li>当执行了 <code>Child.prototype = new Parent()</code>, <strong>我们说找属性的话,会顺着原型链去找</strong>, 比如<code>children</code>要找<code>getRole</code>,那么他会一直找，<code>Child.prototype.__proto__</code>下有<code>getRole</code>, 这就是继承</li>
+<li>当执行了 <code>Child.prototype.value = &quot;123&quot;</code>, <code>children</code>实例也拥有了<strong>value</strong> 。</li>
+<li><strong>缺点</strong>: <ul>
+<li>只要在某个子类下改变了<strong>父类</strong>的<strong>引用类型</strong>的值，那么<strong>子类</strong>都会改变，这样做就<strong>不能做到相互独立</strong>了</li>
+<li>无法实现父类构造函数属性的赋值</li>
+</ul>
+</li>
+</ul>
+<h3 id="使用call，改变this-作用域"><a href="#使用call，改变this-作用域" class="headerlink" title="使用call，改变this 作用域"></a>使用call，改变this 作用域</h3><pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>role <span class="token operator">=</span> <span class="token string">"parent"</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">Child</span><span class="token punctuation">(</span>role<span class="token punctuation">,</span> name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Parent<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> role<span class="token punctuation">)</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> children <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Child</span><span class="token punctuation">(</span><span class="token string">"children"</span><span class="token punctuation">,</span> <span class="token string">"哈哈哈"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment" spellcheck="true">// 注意</span>
+Parent<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>getRole <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>role<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 上面原型方法，子类是无法继承的，即children没有getRole 方法</span></code></pre>
+<p><strong>优点：</strong></p>
+<ul>
+<li>解决了原型继承无法向父类赋值的问题</li>
+<li>可以继承多个构造函数属性（call多个）；</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>只能继承父类构造函数的属性。<strong>原型链新创建的无法被继承</strong></li>
+<li>无法实现构造函数的复用。（每次用每次都要重新调用）</li>
+<li>每个新实例都有父类构造函数的副本，臃肿。</li>
+</ul>
+<h3 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h3><p>将call方式和原型链方式组合起来</p>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Parent</span><span class="token punctuation">(</span>role<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>role <span class="token operator">=</span> role
+<span class="token punctuation">}</span>
+
+Parent<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token string">"test"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">Child</span><span class="token punctuation">(</span>role<span class="token punctuation">,</span> name<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Parent<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> role<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+Child<span class="token punctuation">.</span>prototype <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> children <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Child</span><span class="token punctuation">(</span><span class="token string">"child"</span><span class="token punctuation">,</span> <span class="token string">"admin"</span><span class="token punctuation">)</span></code></pre>
+<p><strong>优点：</strong></p>
+<ul>
+<li>可以继承父类原型上的属性，可以传参，可复用；</li>
+<li>每个新实例引入的构造函数属性是私有的；</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>调用了两次父类构造函数（耗内存），子类的构造函数会代替原型上的那个父类构造函数；</li>
+</ul>
+<h3 id="寄生式继承"><a href="#寄生式继承" class="headerlink" title="寄生式继承"></a>寄生式继承</h3><pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Parent</span><span class="token punctuation">(</span>role<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>role <span class="token operator">=</span> role<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+Parent<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token string">"123"</span>
+
+<span class="token comment" spellcheck="true">// 原型式继承</span>
+<span class="token keyword">function</span> <span class="token function">_extend</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">function</span> <span class="token function">F</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    F<span class="token punctuation">.</span>prototype <span class="token operator">=</span> obj<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// F.prototype = new Parent()  -> 还是回到原型链继承</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">F</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">// 这里像不像 原型链继承上面的 new Child();</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> parent <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Parent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 获取父类实例</span>
+
+<span class="token comment" spellcheck="true">// 以上是原型式继承，以下给原型继承在套个壳子传递参数</span>
+<span class="token keyword">function</span> <span class="token function">wrap</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> name<span class="token punctuation">,</span> role<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">var</span> child <span class="token operator">=</span> <span class="token function">_extend</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">;</span>   
+    child<span class="token punctuation">.</span>role <span class="token operator">=</span> role<span class="token punctuation">;</span>
+    child<span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> child<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">var</span> child <span class="token operator">=</span> <span class="token function">wrap</span><span class="token punctuation">(</span>parent<span class="token punctuation">,</span> <span class="token string">'test'</span><span class="token punctuation">,</span> <span class="token string">"child"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>child<span class="token punctuation">.</span>role<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// "test"</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>child<span class="token punctuation">.</span>value<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// "123"</span>
+
+<span class="token keyword">var</span> child1 <span class="token operator">=</span> <span class="token function">wrap</span><span class="token punctuation">(</span>parent<span class="token punctuation">,</span> <span class="token string">"Bill"</span><span class="token punctuation">,</span> <span class="token string">"child1"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>child1<span class="token punctuation">.</span>list<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [1,2,3]</span>
+
+child1<span class="token punctuation">.</span>list<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token number">456</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>child1<span class="token punctuation">.</span>list<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// [1,2,3,456]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>child<span class="token punctuation">.</span>list<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// [1,2,3,456] </span></code></pre>
+<p>看上面</p>
+<ul>
+<li>又回到了<strong>原型链继承</strong>的缺点之一了，对于<strong>父类引用类型</strong>的，一旦做了修改，子类的都会发生改变</li>
+</ul>
+<h3 id="寄生组合式继承"><a href="#寄生组合式继承" class="headerlink" title="寄生组合式继承"></a>寄生组合式继承</h3><pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">Parent</span><span class="token punctuation">(</span>role<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>role <span class="token operator">=</span> role<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+Parent<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token string">"123"</span>
+
+<span class="token keyword">function</span> <span class="token function">Child</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> role<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Parent<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> role<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">// 等于有了父类构造函数的副本</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">_extend</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">function</span> <span class="token function">F</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    F<span class="token punctuation">.</span>prototype <span class="token operator">=</span> obj<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// F.prototype = new Parent()  -> 还是回到原型链继承</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">F</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">// 这里像不像 原型链继承上面的 new Child();</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">var</span> extendFn <span class="token operator">=</span> <span class="token function">_extend</span><span class="token punctuation">(</span>Parent<span class="token punctuation">.</span>prototype<span class="token punctuation">)</span><span class="token punctuation">;</span>
+Child<span class="token punctuation">.</span>prototype <span class="token operator">=</span> extendFn<span class="token punctuation">;</span>
+
+extendFn<span class="token punctuation">.</span>constructor <span class="token operator">=</span> Child<span class="token punctuation">;</span>
+<span class="token keyword">var</span> children <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Child</span><span class="token punctuation">(</span><span class="token string">"test"</span><span class="token punctuation">,</span> <span class="token string">"child"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>我们看下图<br><img src="https://i.loli.net/2020/06/03/gN4HcF98ymQ7UpA.png" alt="1591157016_1_.jpg"></p>
+<p>上面与下面其实大致一样,</p>
+<pre class=" language-js"><code class="language-js"><span class="token keyword">function</span> <span class="token function">F</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+F<span class="token punctuation">.</span>prototype <span class="token operator">=</span> Parent<span class="token punctuation">.</span>prototype<span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">Child</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    Parent<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+Child<span class="token punctuation">.</span>prototype <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">F</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 是不是有点像组合模式</span></code></pre>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// 寄生组合模式理想版</span>
+<span class="token keyword">function</span> <span class="token function">inheritPrototype</span><span class="token punctuation">(</span>subType<span class="token punctuation">,</span> superType<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">var</span> prototype <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span>superType<span class="token punctuation">.</span>prototype<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//创建对象</span>
+    prototype<span class="token punctuation">.</span>constructor <span class="token operator">=</span> subType<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//增强对象</span>
+    subType<span class="token punctuation">.</span>prototype <span class="token operator">=</span> prototype<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//指定对象</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">SuperType</span><span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>name <span class="token operator">=</span> name<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>colors <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"red"</span><span class="token punctuation">,</span> <span class="token string">"blue"</span><span class="token punctuation">,</span> <span class="token string">"green"</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+SuperType<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>sayName <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">alert</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">SubType</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> age<span class="token punctuation">)</span><span class="token punctuation">{</span>
+    SuperType<span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>age <span class="token operator">=</span> age<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token function">inheritPrototype</span><span class="token punctuation">(</span>SubType<span class="token punctuation">,</span> SuperType<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment" spellcheck="true">//实现继承</span>
+SubType<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span>sayAge <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token function">alert</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>age<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/js/"># js</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/06/03/%E8%AE%B0%E5%BD%95%E4%B8%80%E4%B8%8Breact%E7%9A%84%E4%B8%80%E4%BA%9B%E7%94%A8%E6%B3%95/">记录一下react的一些用法</a>
+            
+            
+            <a class="next" rel="next" href="/2020/05/29/%E6%89%93%E5%AE%B6%E5%8A%AB%E8%88%8D/">打家劫舍</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div>
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                网址，例如： front-matter---layout: postdate: <b mark></b>
+                                7-07-05title: [转]如何搭建基于Hexo的独立博客categories: [Dev, Hexo]tags: - Hexoauthor: name: xaoxuu avatar: https://cdn.jsdelivr.......
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

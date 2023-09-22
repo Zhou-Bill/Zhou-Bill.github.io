@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>面试总结 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+
+    <script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+
+<script>
+    function pjax_fancybox() {
+      $(".post-content").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+        var element = document.createElement("a"); // a 标签
+        $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+        $(element).attr("href", $(this).attr("src"));
+        // console.log($(this));
+        if ($(this).attr("data-original")) {
+          $(element).attr("href", $(this).attr("data-original"));
+        }
+        $(element).attr("data-fancybox", "images");
+        var caption = "";   // 描述信息
+        if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+          $(element).attr('data-caption', $(this).attr('alt'));
+          caption = $(this).attr('alt');
+        }
+        var div = document.createElement("div");
+        $(div).addClass("fancybox");
+        $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+        // var span = document.createElement("span");
+        // $(span).addClass("image-caption");
+        // $(span).text(caption); // 加描述
+        // $(this).after(span);  // 再套一层描述
+        $(this).wrap(element);  // 最后套 a 标签
+      })
+      $(".post-content").find("img").fancybox({
+        selector: '[data-fancybox="images"]',
+        hash: false,
+        loop: false,
+        closeClick: true,
+        helpers: {
+          overlay: {closeClick: true}
+        },
+        buttons: [
+          "zoom",
+          "close"
+        ]
+      });
+    };
+    $(function () {
+      pjax_fancybox();
+    });
+  </script>
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+                    <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+                </div>
+                
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">面试总结</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">九月 10, 2020&nbsp;&nbsp;18:37:32</a>
+                        </span>
+                    
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="vdom"><a href="#vdom" class="headerlink" title="vdom"></a>vdom</h2><p>将多次dom修改的结果一次性更新到页面上，从而减少了页面的渲染次数，减少了修改dom之后的回流与重绘，提高了渲染性能<br><strong>VDOM的厉害之处不在于他运行有多快，而在于它在不需要人工优化的情况下，提供一个过得去的性能优化</strong></p>
+<h2 id="说一说之前的面试体验吧"><a href="#说一说之前的面试体验吧" class="headerlink" title="说一说之前的面试体验吧"></a>说一说之前的面试体验吧</h2><ul>
+<li>有一些纯属浪费时间，技术栈不太符合的也叫你过去面试，以后需要在先问技术栈再决定去不去面试，不然把自己搞的又累又浪费时间</li>
+<li>面试本来就是双向选择，所以对面试官不要怂，说不定他比你还垃圾，毕竟<strong>面试造火箭，工作拧螺丝</strong></li>
+<li>经过这几轮面试， 主要可能问到的是 <ul>
+<li>算法（排序， 动态规划）， </li>
+<li>react 源码（fiber, react 事件原理, 时间片（time slicing）， setState 在setTimeout 执行为什么是同步的, hook 实现原理也就是闭包， hook ref.current）(前端面试星球小程序有答案)</li>
+<li>react diff 算法<ul>
+<li>分3种，1 tree duff 2 component diff  3 element diff </li>
+</ul>
+</li>
+<li>网络问题 （tcp/ip, https, http1.0 与 http 1.1）<ul>
+<li>tcp/ip 三次捂手， 四次挥手</li>
+<li>https 基于ssl /tls  对称加密（简单说就是把各自秘钥传给对方），非对称加密</li>
+<li>http1.0（一个http 请求连一个tcp, 所以时间耗在3次握手，4次回收）, http 1.1（增加 keep-alive）, http2.0 (头部压缩，二进制流，帧中有报文信息，通过排序重新组合还原报文) 的区别</li>
+</ul>
+</li>
+<li>nodejs (中间件) 插件</li>
+<li>umi 底层， 约定式路由实现， dva， cli 集合 （webpack, ssr， UI库） 等等是怎么实现的</li>
+<li>设计模式 （工厂， 单例， 观察者模式， 发布订阅）</li>
+</ul>
+</li>
+</ul>
+<h2 id="说一说未来"><a href="#说一说未来" class="headerlink" title="说一说未来"></a>说一说未来</h2><ul>
+<li>针对算法 动态规划，DFS, BFS, 二分法，链表， 二叉树，</li>
+<li>react 源码，继续深入，这次要先看结构，再深入源码</li>
+<li>vue 3.0 原理， 深入学习vue生态 （vuex, vue-router, echart）</li>
+<li>图表实现 （canvas， three.js）</li>
+<li>nodejs </li>
+<li>一个后端 语言 nodejs / python</li>
+</ul>
+<h2 id="书"><a href="#书" class="headerlink" title="书"></a>书</h2><ul>
+<li>设计模式</li>
+<li>红宝书</li>
+<li>图解http</li>
+</ul>
+<h2 id="学习本就是输入输出的事情，-学是输入，教别人是输出，多记录多回顾"><a href="#学习本就是输入输出的事情，-学是输入，教别人是输出，多记录多回顾" class="headerlink" title="学习本就是输入输出的事情， 学是输入，教别人是输出，多记录多回顾"></a>学习本就是输入输出的事情， 学是输入，教别人是输出，多记录多回顾</h2>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2020/09/26/%E8%B7%AF%E5%BE%84%E6%80%BB%E5%92%8C-II/">路径总和 II</a>
+            
+            
+            <a class="next" rel="next" href="/2020/09/08/%E6%89%8B%E5%86%99%E6%BA%90%E7%A0%81%E7%B3%BB%E5%88%97/">手写源码系列</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div>
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                网址，例如： front-matter---layout: postdate: <b mark></b>
+                                7-07-05title: [转]如何搭建基于Hexo的独立博客categories: [Dev, Hexo]tags: - Hexoauthor: name: xaoxuu avatar: https://cdn.jsdelivr.......
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

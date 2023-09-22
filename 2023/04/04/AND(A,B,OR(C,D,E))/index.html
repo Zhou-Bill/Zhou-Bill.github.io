@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Chow Bill">
+
+
+
+
+    <meta name="keywords" content="前端博客">
+
+
+<title>AND(A,B,OR(C,D,E)) 转换 | Chow Bill&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+
+
+
+    <script type="text/javascript" src="/js/jquery.fancybox.min.js"></script>
+
+<script>
+    function pjax_fancybox() {
+      $(".post-content").find("img").not('.inline').not('a img').each(function () { //渲染 fancybox
+        var element = document.createElement("a"); // a 标签
+        $(element).attr("pjax-fancybox", "");  // 过滤 pjax
+        $(element).attr("href", $(this).attr("src"));
+        // console.log($(this));
+        if ($(this).attr("data-original")) {
+          $(element).attr("href", $(this).attr("data-original"));
+        }
+        $(element).attr("data-fancybox", "images");
+        var caption = "";   // 描述信息
+        if ($(this).attr('alt')) {  // 判断当前页面是否存在描述信息
+          $(element).attr('data-caption', $(this).attr('alt'));
+          caption = $(this).attr('alt');
+        }
+        var div = document.createElement("div");
+        $(div).addClass("fancybox");
+        $(this).wrap(div); // 最外层套 div ，其实主要作用还是 class 样式
+        // var span = document.createElement("span");
+        // $(span).addClass("image-caption");
+        // $(span).text(caption); // 加描述
+        // $(this).after(span);  // 再套一层描述
+        $(this).wrap(element);  // 最后套 a 标签
+      })
+      $(".post-content").find("img").fancybox({
+        selector: '[data-fancybox="images"]',
+        hash: false,
+        loop: false,
+        closeClick: true,
+        helpers: {
+          overlay: {closeClick: true}
+        },
+        buttons: [
+          "zoom",
+          "close"
+        ]
+      });
+    };
+    $(function () {
+      pjax_fancybox();
+    });
+  </script>
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --><link rel="stylesheet" href="/css/prism-base16-ateliersulphurpool.light.css" type="text/css"></head>
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chow_Bill</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chow_Bill</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="搜索文章，回车搜索" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+                    <div class="menu-toggle" onclick="mobileBtn()">&#9776; 目录</div>
+                </div>
+                
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">文章</a>
+                
+                    <a class="menu-item" href="/category">分类</a>
+                
+                    <a class="menu-item" href="/tag">标签</a>
+                
+                    <a class="menu-item" href="/algorithm">力扣</a>
+                
+                    <a class="menu-item" href="/about">关于</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+            toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+        <div class="main">
+            <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    document.ready(
+        function () {
+            tocbot.init({
+                tocSelector: '.tocbot-list',
+                contentSelector: '.post-content',
+                headingSelector: 'h1, h2, h3, h4, h5',
+                collapseDepth: 1,
+                orderedList: false,
+                scrollSmooth: true,
+            })
+        }
+    )
+
+    function expand_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 6,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "collapse_toc()");
+        b.innerHTML = "Collapse all"
+    }
+
+    function collapse_toc() {
+        var b = document.querySelector(".tocbot-toc-expand");
+        tocbot.init({
+            tocSelector: '.tocbot-list',
+            contentSelector: '.post-content',
+            headingSelector: 'h1, h2, h3, h4, h5',
+            collapseDepth: 1,
+            orderedList: false,
+            scrollSmooth: true,
+        });
+        b.setAttribute("onclick", "expand_toc()");
+        b.innerHTML = "Expand all"
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">AND(A,B,OR(C,D,E)) 转换</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Chow Bill</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">四月 4, 2023&nbsp;&nbsp;10:20:00</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/js/">js</a>
+                            
+                        </span>
+                    
+                    
+                        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+<span class="site-pv">
+    总访问量:
+    <i class="busuanzi-value" id="busuanzi_value_site_pv"></i>
+</span>
+
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>一天，朋友问我 <code>AND(A,B,OR(C,D,E))</code> 该怎么转换成 <code>A&amp;B&amp;(C|D|E)</code>, 当时回复他用栈就可以了吧，后来自己实现了一下，<br>才发现没这么简单。下面是我实现的思路：</p>
+<ul>
+<li>先把符号入栈，这里的符号指的是 <code>AND</code> 或者是 <code>OR</code> 转换成 <code>&amp;</code> 或 <code>|</code>, 我们每次拿栈顶的符号进行括号内的转换就行了</li>
+<li>遇到<code>（</code> 就将<code>里面的值</code> 加进数组中，遇到 <code>)</code>就将<code>这个数组</code>入栈， 我们称这个叫数据栈</li>
+<li>最后将数据栈与符号栈结合</li>
+</ul>
+<p>以下是完整代码：</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// console.log(convertString('AND(A,B,OR(C,D,E))')); // "A&amp;B&amp;(C|D|E)"我想实现这个convertstring有什么好的思路吗</span>
+<span class="token keyword">function</span> <span class="token function">merge</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">function</span> <span class="token function">mergeExpr</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> sep<span class="token punctuation">,</span> level<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>arr<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token string">''</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">const</span> target <span class="token operator">=</span> arr<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    <span class="token keyword">const</span> current <span class="token operator">=</span> target <span class="token operator">+</span> <span class="token punctuation">(</span>arr<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">?</span> sep <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> current <span class="token operator">+</span> <span class="token punctuation">(</span>arr<span class="token punctuation">.</span>length <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">?</span> <span class="token string">'('</span> <span class="token operator">+</span> <span class="token function">mergeExpr</span><span class="token punctuation">(</span>arr<span class="token punctuation">,</span> b<span class="token punctuation">[</span>level <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> level <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">')'</span> <span class="token punctuation">:</span> <span class="token string">''</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">mergeExpr</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> convertString <span class="token operator">=</span> <span class="token punctuation">(</span>string<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> length <span class="token operator">=</span>  string<span class="token punctuation">.</span>length
+
+  <span class="token keyword">const</span> MAP <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">'AND'</span><span class="token punctuation">:</span> <span class="token string">'&amp;'</span><span class="token punctuation">,</span>
+    <span class="token string">'OR'</span><span class="token punctuation">:</span> <span class="token string">'|'</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment" spellcheck="true">// 记录符号</span>
+  <span class="token keyword">const</span> stack1 <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+  <span class="token comment" spellcheck="true">//记录数据， 每一个（） 里面的数据 都是一个数组， 所以他是一个二维数组</span>
+  <span class="token keyword">const</span> stack2 <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+  <span class="token comment" spellcheck="true">// 表示栈中的层级 没遇到一个（ 就加一， 遇到 ） 就减一</span>
+  <span class="token keyword">let</span> level <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+  <span class="token keyword">let</span> tempString <span class="token operator">=</span> <span class="token string">''</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> nextChar <span class="token operator">=</span>  string<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span>
+    <span class="token keyword">const</span> currentChar <span class="token operator">=</span>  string<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>currentChar <span class="token operator">===</span> <span class="token string">'('</span> <span class="token operator">||</span> currentChar <span class="token operator">===</span> <span class="token string">','</span> <span class="token operator">||</span> currentChar <span class="token operator">===</span> <span class="token string">')'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">continue</span>
+    <span class="token punctuation">}</span>
+    tempString <span class="token operator">=</span> tempString <span class="token operator">+</span> currentChar
+
+    <span class="token comment" spellcheck="true">// 如果下一个是字母 是 （  那么就是一个完整的字符串, 也就是 AND 或者 OR</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      level <span class="token operator">=</span> level <span class="token operator">+</span> <span class="token number">1</span>
+      stack2<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      stack1<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>MAP<span class="token punctuation">[</span>tempString<span class="token punctuation">]</span><span class="token punctuation">)</span>
+      tempString <span class="token operator">=</span> <span class="token string">''</span>
+      <span class="token keyword">continue</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">','</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> topData <span class="token operator">=</span> stack2<span class="token punctuation">[</span>level<span class="token punctuation">]</span>
+      topData<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>tempString<span class="token punctuation">)</span>
+      tempString <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">')'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> topData <span class="token operator">=</span> stack2<span class="token punctuation">[</span>level<span class="token punctuation">]</span>
+      topData<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>tempString<span class="token punctuation">)</span>
+      tempString <span class="token operator">=</span> <span class="token string">''</span>
+      level <span class="token operator">=</span> level <span class="token operator">-</span> <span class="token number">1</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">const</span> k <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> stack1<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> character <span class="token operator">=</span> stack1<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+    k<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>stack2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span>character<span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">merge</span><span class="token punctuation">(</span>k<span class="token punctuation">,</span> stack1<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,OR(C,D,E,AND(F,G)))'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B,C),D,E)'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> c <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,J,OR(C,D,E,AND(F,G),K))'</span><span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>a<span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span>
+</code></pre>
+<h2 id="第二版"><a href="#第二版" class="headerlink" title="第二版"></a>第二版</h2><p>上面那版是有bug， 以下这一版是通过 通过递归的操作， 获取括号内的内容， 进行操作，如果还有括号，那么继续进行递归</p>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">function</span> <span class="token function">convertString</span><span class="token punctuation">(</span>string<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> MAP <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token string">'AND'</span><span class="token punctuation">:</span> <span class="token string">'&amp;'</span><span class="token punctuation">,</span>
+    <span class="token string">'OR'</span><span class="token punctuation">:</span> <span class="token string">'|'</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">function</span> <span class="token function">calculate</span><span class="token punctuation">(</span>string<span class="token punctuation">,</span> character<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> length <span class="token operator">=</span> string<span class="token punctuation">.</span>length<span class="token punctuation">;</span>
+    <span class="token keyword">let</span> res <span class="token operator">=</span> <span class="token string">''</span> 
+    <span class="token keyword">let</span> tempString <span class="token operator">=</span> <span class="token string">''</span>
+    <span class="token keyword">let</span> tempCharacter <span class="token operator">=</span> character
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> currentChar <span class="token operator">=</span> string<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> nextChar <span class="token operator">=</span> string<span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token punctuation">;</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>currentChar <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">let</span> j <span class="token operator">=</span> i<span class="token punctuation">;</span>
+        <span class="token keyword">let</span> cnt <span class="token operator">=</span> <span class="token number">0</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span>i <span class="token operator">&lt;</span> length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>string<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token operator">++</span>cnt<span class="token punctuation">;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>string<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token string">')'</span><span class="token punctuation">)</span> <span class="token operator">--</span>cnt<span class="token punctuation">;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>cnt <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        res <span class="token operator">+</span><span class="token operator">=</span>  <span class="token string">'('</span> <span class="token operator">+</span> <span class="token function">calculate</span><span class="token punctuation">(</span>string<span class="token punctuation">.</span><span class="token function">substring</span><span class="token punctuation">(</span>j <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">,</span> tempCharacter<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">')'</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 如果递归后，后面仍然有其他内容，那么添加上当前的 符号</span>
+        res <span class="token operator">+</span><span class="token operator">=</span> i <span class="token operator">&lt;</span> length <span class="token operator">-</span> <span class="token number">1</span> <span class="token operator">?</span> character <span class="token punctuation">:</span> <span class="token string">''</span>
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+        tempCharacter <span class="token operator">=</span> character
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>currentChar <span class="token operator">===</span> <span class="token string">','</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      tempString <span class="token operator">+</span><span class="token operator">=</span> currentChar<span class="token punctuation">;</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">'('</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        tempCharacter <span class="token operator">=</span> MAP<span class="token punctuation">[</span>tempString<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">','</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        res <span class="token operator">+</span><span class="token operator">=</span> tempString <span class="token operator">+</span> tempCharacter
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+        <span class="token keyword">continue</span>
+      <span class="token punctuation">}</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>nextChar <span class="token operator">===</span> <span class="token string">')'</span> <span class="token operator">||</span> <span class="token keyword">typeof</span> nextChar <span class="token operator">===</span> <span class="token string">'undefined'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        res <span class="token operator">+</span><span class="token operator">=</span> tempString
+        tempString <span class="token operator">=</span> <span class="token string">''</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> res
+  <span class="token punctuation">}</span>
+
+  <span class="token keyword">const</span> final <span class="token operator">=</span> <span class="token function">calculate</span><span class="token punctuation">(</span>string<span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> final<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,OR(C,D,E,AND(F,G)))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> e <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B,OR(C,D,E,AND(F,G))),I,OR(AND(A,B,C),D,E))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> b <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B,C),D,E)'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> d <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'OR(AND(A,B),AND(C,D))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> c <span class="token operator">=</span> <span class="token function">convertString</span><span class="token punctuation">(</span><span class="token string">'AND(A,B,J,OR(C,D,E,AND(F,G),K))'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+</code></pre>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/js/"># js</a>
+                    
+                        
+                </span>
+            </div>
+            <div class="reward" >
+                
+                    
+    <div class="sponser">
+        <div class="sponser_btn">支持一下</div>
+        <div class="sponser_img">
+            <div class="sponser_container">
+                <div class="sponser_header">
+                    请我喝杯可乐
+                </div>
+                <div class="sponser_body">
+                    <div class="alipay">
+                        <span class="sponser_alipay_title">支付宝扫一扫</span>
+                        <img src="/image/ali.png"  class="sponser_alipay" />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+                
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/09/18/%E5%86%99%E4%B8%80%E4%B8%AAdumi%20markdown%20%E6%8F%92%E4%BB%B6/">dumi markdown 增强插件</a>
+            
+            
+            <a class="next" rel="next" href="/2023/02/14/taro%20%E5%8D%87%E7%BA%A7%E9%81%87%E8%A7%81%E7%9A%84%E5%9D%91/">taro 升级遇见的坑</a>
+            
+        </section>
+
+        
+            <div id="gitalk-container"></div>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.css">
+<script src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.2/dist/gitalk.min.js"></script>
+<div id="gitalk-container"></div>
+<script type="text/javascript">
+      var gitalk = new Gitalk({
+        clientID: '0c5901c167ea2dbcfc03',
+        clientSecret: '1947e237e6d6211e41ed875eb12e41babfceb1cd',
+        repo: 'Zhou-Bill.github.io',
+        owner: 'Zhou-Bill',
+        admin: 'Zhou-Bill',
+        id:  md5(location.pathname),
+        labels: 'Gitalk'.split(',').filter(l => l),
+        perPage: 10,
+        pagerDirection: 'last',
+        createIssueManually: true,
+        distractionFreeMode: false
+      })
+      gitalk.render('gitalk-container')
+</script>
+        
+
+    </article>
+</div>
+
+        </div>
+        <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Chow Bill </span>
+    </div>
+</footer>
+
+    </div>
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="搜索文章。。。" class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <!-- <ul class="modal-results">
+                    <li class="result-item">
+                        <a class="result-item-detail">
+                            <span class="title">页面配置</span>
+                            <span class="content">
+                                网址，例如： front-matter---layout: postdate: <b mark></b>
+                                7-07-05title: [转]如何搭建基于Hexo的独立博客categories: [Dev, Hexo]tags: - Hexoauthor: name: xaoxuu avatar: https://cdn.jsdelivr.......
+                            </span>
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
