@@ -527,21 +527,21 @@
 <h2 id="尝试使用-ModuleFederation"><a href="#尝试使用-ModuleFederation" class="headerlink" title="尝试使用 ModuleFederation"></a>尝试使用 ModuleFederation</h2><ul>
 <li>Monitor 组件是一个比较正常的页面搜索列表页，这里不列出来了</li>
 </ul>
-<pre class=" language-tsx"><code class="language-tsx">const Log2 = () => {
-  return (
-    <div>123</div>
-  )
-}</code></pre>
-<pre class=" language-tsx"><code class="language-tsx">const Log3 = () => {
-  const [count, setCount] = useState(0);
-  return (
-    <div onClick={() => setCount(count + 1)}>{count}</div>
-  )
-}</code></pre>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> Log2 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span><span class="token punctuation">></span></span><span class="token number">123</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> Log3 <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">[</span>count<span class="token punctuation">,</span> setCount<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">useState</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">onClick</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token function">setCount</span><span class="token punctuation">(</span>count <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span><span class="token punctuation">{</span>count<span class="token punctuation">}</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">></span></span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
 <ul>
 <li>刚开始看的时候，还觉得挺简单，只要在设置对应的设置即可</li>
 </ul>
-<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// A项目, 在webpack plugin 中配置如下项目</span>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">// A项目, 在webpack plugin 中配置如下项目</span>
 <span class="token keyword">new</span> <span class="token class-name">ModuleFederationPlugin</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
   name<span class="token punctuation">:</span> <span class="token string">'erp'</span><span class="token punctuation">,</span>
   filename<span class="token punctuation">:</span> <span class="token string">'erp_remoteEntry.js'</span><span class="token punctuation">,</span>
@@ -574,7 +574,7 @@
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span></code></pre>
-<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">// B 项目中使用remote 表示导入远程模块， B项目使用的是umi</span>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">// B 项目中使用remote 表示导入远程模块， B项目使用的是umi</span>
 <span class="token comment" spellcheck="true">// [text](https://umijs.org/docs/max/mf)</span>
 
 <span class="token keyword">const</span> shared <span class="token operator">=</span> <span class="token punctuation">{</span>
@@ -605,32 +605,37 @@ mf<span class="token punctuation">:</span> <span class="token punctuation">{</sp
 <li><p>一开始在A项目中配置<code>shared</code> 导致项目<code>build</code> 失败了，因为一开始是通过导入<code>const package = require(&#39;./package.json&#39;)</code> 然后通过 <code>package.dependence[&#39;react&#39;]</code> 去导入的，后面改成用字符串就成功了</p>
 </li>
 <li><p>因为一开始没有处理<code>shared</code>, <code>A项目</code>与<code>B项目</code>的react版本问题，导致在<code>B项目</code> 中引用<code>Log3</code> 组件时报错。 处理<code>shared</code> 可以解决</p>
-<pre class=" language-tsx"><code class="language-tsx"></code></pre>
 </li>
 </ul>
-<p>import React from ‘react’<br>const LogPage = React.lazy(() =&gt; import(‘erp/Log3’));</p>
-<p>const App = () =&gt; {<br>  return (<br>    &lt;React.Suspense fallback={‘Loading’}&gt;<br>      <LogPage><br>    &lt;/React.Suspense&gt;<br>  )<br>}</LogPage></p>
-<pre><code>
-* 处理了上面的事情后，发现导入`Monitor` 组件是有问题的，因为 `Monitor` 页面本身导入了一些翻译内容，比如 `xx-i18n`包, 并且这个包是通过`script` 的方式引入的，所以我们需要在`B项目中的webpack 中设置externals` 
+<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span>
+<span class="token keyword">const</span> LogPage <span class="token operator">=</span> React<span class="token punctuation">.</span><span class="token function">lazy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">import</span><span class="token punctuation">(</span><span class="token string">'erp/Log3'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-[externals](https://webpack.js.org/configuration/externals/#root)
+<span class="token keyword">const</span> App <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>React.Suspense</span> <span class="token attr-name">fallback</span><span class="token script language-javascript"><span class="token punctuation">=</span><span class="token punctuation">{</span><span class="token string">'Loading'</span><span class="token punctuation">}</span></span><span class="token punctuation">></span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>LogPage</span> <span class="token punctuation">/></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>React.Suspense</span><span class="token punctuation">></span></span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<ul>
+<li>处理了上面的事情后，发现导入<code>Monitor</code> 组件是有问题的，因为 <code>Monitor</code> 页面本身导入了一些翻译内容，比如 <code>xx-i18n</code>包, 并且这个包是通过<code>script</code> 的方式引入的，所以我们需要在<code>B项目中的webpack 中设置externals</code> </li>
+</ul>
+<p><a href="https://webpack.js.org/configuration/externals/#root" target="_blank" rel="noopener">externals</a></p>
+<p>在<code>umi</code> 添加<code>plugins</code>, 在<code>config/config.ts</code> 配置<code>plugin</code>, <code>plugins: [require(&#39;${projectRoot}/xxxplugin&#39;)]</code>, 或者设置<code>headScripts</code></p>
+<pre class=" language-jsx"><code class="language-jsx"><span class="token comment" spellcheck="true">// ${projectRoot}/plugin.ts</span>
 
-在`umi` 添加`plugins`, 在`config/config.ts` 配置`plugin`, `plugins: [require(&#39;${projectRoot}/xxxplugin&#39;)]`, 或者设置`headScripts`
+<span class="token keyword">import</span> <span class="token punctuation">{</span> IApi <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'umi'</span><span class="token punctuation">;</span>
 
-```js
-// ${projectRoot}/plugin.ts
-
-import { IApi } from &#39;umi&#39;;
-
-export default (api: IApi) =&gt; {
-  api.modifyHTML(($) =&gt; {
-    $(&#39;head&#39;).append([
-      `&lt;script src=&#39;xxx.js&#39;&gt;&lt;/script&gt;`,
-      `&lt;script src=&#39;others...&#39;&gt;&lt;/script&gt;`
-    ])
-    return $;
-  });
-};</code></pre><ul>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">(</span>api<span class="token punctuation">:</span> IApi<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  api<span class="token punctuation">.</span><span class="token function">modifyHTML</span><span class="token punctuation">(</span><span class="token punctuation">(</span>$<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+    <span class="token function">$</span><span class="token punctuation">(</span><span class="token string">'head'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">append</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+      <span class="token template-string"><span class="token string">`&lt;script src='xxx.js'>&lt;/script>`</span></span><span class="token punctuation">,</span>
+      <span class="token template-string"><span class="token string">`&lt;script src='others...'>&lt;/script>`</span></span>
+    <span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> $<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<ul>
 <li>最后因为 <code>Monitor</code> 引用了 <code>A项目中的全局Mobx store</code>，导致加载失败，最后去除才成功引入。但是后面发现样式有问题，估计是<code>antd</code> 的问题，<code>A 项目中用的是antd4</code>, <code>B项目用的是antd5</code>。猜测只要将<code>antd</code> 加入到<code>shared</code> 配置即可，<code>Mobx store</code> 同样</li>
 </ul>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
