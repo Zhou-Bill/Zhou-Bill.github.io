@@ -14,7 +14,7 @@
     <meta name="keywords" content="前端博客">
 
 
-<title>使用 axios 拦截器为请求特殊添加请求值 | Chow Bill&#39;s Blog</title>
+<title>从eslint-plugin-import中学习如何开发插件 | Chow Bill&#39;s Blog</title>
 
 
 
@@ -483,7 +483,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">使用 axios 拦截器为请求特殊添加请求值</h1>
+            <h1 class="post-title">从eslint-plugin-import中学习如何开发插件</h1>
             
                 <div class="post-meta">
                     
@@ -492,9 +492,16 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">五月 23, 2024&nbsp;&nbsp;20:31:00</a>
+                        Date: <a href="#">六月 3, 2024&nbsp;&nbsp;10:11:25</a>
                         </span>
                     
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/eslint/">eslint</a>
+                            
+                        </span>
                     
                     
                         <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -511,100 +518,154 @@
         </header>
 
         <div class="post-content">
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近接到一个需求，登录后需要把站点id 加入到请求header 中。那么我们很容易就能想到通过用<code>axios</code> 的拦截器中设置就可以了，页面打开后必定会调用一个<code>获取站点（getStation）</code> 的接口拿到<code>station_id</code> 后，给其余的所有接口header 都加上 <code>station_id</code>, 但问题是当打开页面的时候，页面可能会同时调用其他接口，你并不能明确知道你这个接口一定是先返回的。</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>我们可以在没有<code>station信息</code>的时候将请求加入到队列中。但是这样会reject后<br>控制台会<code>Promise.reject</code>  报错，所以这种并不合适</p>
-<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">const</span> queue<span class="token punctuation">:</span> any<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
-<span class="token comment" spellcheck="true">/** 是否在获取station */</span>
-<span class="token keyword">function</span> <span class="token function">initStation</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> STATION_URL <span class="token operator">=</span> GetStation<span class="token punctuation">.</span>url
-  <span class="token keyword">const</span> BLACK_URLS <span class="token operator">=</span> <span class="token punctuation">[</span>
-    Token<span class="token punctuation">.</span>url<span class="token punctuation">,</span>
-  <span class="token punctuation">]</span>
-  <span class="token keyword">let</span> stationData<span class="token punctuation">:</span> GetStationResponse <span class="token operator">|</span> <span class="token keyword">null</span> <span class="token operator">=</span> <span class="token keyword">null</span>
-
-  instance<span class="token punctuation">.</span>interceptors<span class="token punctuation">.</span>request<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>BLACK_URLS<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span>url<span class="token operator">!</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> config
-    <span class="token punctuation">}</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>stationData<span class="token operator">?</span><span class="token punctuation">.</span>station<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token comment" spellcheck="true">// eslint-disable-next-line no-new</span>
-      <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-        queue<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-          config<span class="token punctuation">,</span>
-          resolve<span class="token punctuation">,</span>
-        <span class="token punctuation">}</span><span class="token punctuation">)</span>
-      <span class="token punctuation">}</span><span class="token punctuation">)</span>
-      <span class="token keyword">return</span> Promise<span class="token punctuation">.</span><span class="token function">reject</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">const</span> type <span class="token operator">=</span> stationData<span class="token operator">?</span><span class="token punctuation">.</span>station<span class="token operator">?</span><span class="token punctuation">.</span>type
-
-    config<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'x-station-id'</span><span class="token punctuation">]</span> <span class="token operator">=</span> stationData<span class="token operator">?</span><span class="token punctuation">.</span>station<span class="token operator">?</span><span class="token punctuation">.</span>station_id <span class="token operator">||</span> <span class="token string">'0'</span>
-    <span class="token keyword">return</span> config
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-
-  instance<span class="token punctuation">.</span>interceptors<span class="token punctuation">.</span>response<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span>response<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>response<span class="token punctuation">.</span>config<span class="token punctuation">.</span>url<span class="token operator">?</span><span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>STATION_URL<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">const</span> json<span class="token punctuation">:</span> GetStationResponse <span class="token operator">=</span> response<span class="token punctuation">.</span>data
-      stationData <span class="token operator">=</span> json
-      queue<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">{</span> config<span class="token punctuation">,</span> resolve <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-        config<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'x-station-id'</span><span class="token punctuation">]</span> <span class="token operator">=</span> json<span class="token punctuation">.</span>station<span class="token punctuation">.</span>station_id <span class="token operator">||</span> <span class="token string">'0'</span>
-        <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token function">instance</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span><span class="token punctuation">)</span>
-      <span class="token punctuation">}</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-    <span class="token keyword">return</span> response
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+            <h2 id="库"><a href="#库" class="headerlink" title="库"></a>库</h2><p><a href="https://github.com/import-js/eslint-plugin-import" target="_blank" rel="noopener">-eslint-plugin-import</a></p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>我们从一个简单的例子去看，比如在规则中的<code>exports-last</code>, 他的作用是确保<code>export</code> 放到最后导出</p>
+<blockquote>
+<p>exports-last</p>
+</blockquote>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">/** valid */</span>
+<span class="token keyword">const</span> foo <span class="token operator">=</span> <span class="token string">'bar'</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> foo
+<span class="token keyword">export</span> <span class="token keyword">const</span> bar <span class="token operator">=</span> <span class="token boolean">true</span></code></pre>
+<pre class=" language-js"><code class="language-js"><span class="token comment" spellcheck="true">/** invalid */</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token string">'such foo many bar'</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> so <span class="token operator">=</span> <span class="token string">'many'</span>
+<span class="token keyword">const</span> foo <span class="token operator">=</span> <span class="token string">'bar'</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> exports <span class="token operator">=</span> <span class="token string">':)'</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> i <span class="token operator">=</span> <span class="token string">'cant'</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> even <span class="token operator">=</span> <span class="token string">'count'</span>
+<span class="token keyword">export</span> <span class="token keyword">const</span> how <span class="token operator">=</span> <span class="token string">'many'</span></code></pre>
+<pre class=" language-js"><code class="language-js">
+<span class="token keyword">function</span> <span class="token function">isNonExportStatement</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> type <span class="token operator">!==</span> <span class="token string">'ExportDefaultDeclaration'</span>
+    <span class="token operator">&amp;&amp;</span> type <span class="token operator">!==</span> <span class="token string">'ExportNamedDeclaration'</span>
+    <span class="token operator">&amp;&amp;</span> type <span class="token operator">!==</span> <span class="token string">'ExportAllDeclaration'</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-</code></pre>
-<h2 id="另一种方法"><a href="#另一种方法" class="headerlink" title="另一种方法"></a>另一种方法</h2><p>如果<code>站点信息</code> 没有值的时候，其他请求都在等待中,等<code>getStation</code> 返回后再回来执行其他请求</p>
-<pre class=" language-jsx"><code class="language-jsx"><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">initStation</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token keyword">const</span> STATION_URL <span class="token operator">=</span> GetStation<span class="token punctuation">.</span>url
-  <span class="token keyword">const</span> BLACK_URLS <span class="token operator">=</span> <span class="token punctuation">[</span>
-    Token<span class="token punctuation">.</span>url<span class="token punctuation">,</span>
-    STATION_URL<span class="token punctuation">,</span>
-  <span class="token punctuation">]</span>
-  <span class="token keyword">let</span> stationData<span class="token punctuation">:</span> GetStationResponse <span class="token operator">|</span> <span class="token keyword">null</span> <span class="token operator">=</span> <span class="token keyword">null</span>
-  <span class="token keyword">let</span> tempResult<span class="token punctuation">:</span> <span class="token punctuation">(</span>res<span class="token punctuation">:</span> GetStationResponse<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token keyword">void</span>
 
-  <span class="token keyword">const</span> resultPromise <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>GetStationResponse</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-    tempResult <span class="token operator">=</span> <span class="token punctuation">(</span>res<span class="token punctuation">:</span> GetStationResponse<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-      stationData <span class="token operator">=</span> res
-      <span class="token function">resolve</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-
-  instance<span class="token punctuation">.</span>interceptors<span class="token punctuation">.</span>request<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>BLACK_URLS<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span>url<span class="token operator">!</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> config
-    <span class="token punctuation">}</span>
-    <span class="token comment" spellcheck="true">/** 如果没拿到station 数据那么就等待 */</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>stationData<span class="token operator">?</span><span class="token punctuation">.</span>station<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> resultPromise<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-        config<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'x-station-id'</span><span class="token punctuation">]</span> <span class="token operator">=</span> res<span class="token operator">?</span><span class="token punctuation">.</span>station<span class="token operator">?</span><span class="token punctuation">.</span>station_id <span class="token operator">||</span> <span class="token string">'0'</span>
-
-        <span class="token keyword">return</span> config
-      <span class="token punctuation">}</span><span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-
-    config<span class="token punctuation">.</span>headers<span class="token punctuation">[</span><span class="token string">'x-station-id'</span><span class="token punctuation">]</span> <span class="token operator">=</span> stationData<span class="token operator">?</span><span class="token punctuation">.</span>station<span class="token operator">?</span><span class="token punctuation">.</span>station_id <span class="token operator">||</span> <span class="token string">'0'</span>
-
-    <span class="token keyword">return</span> config
-  <span class="token punctuation">}</span><span class="token punctuation">)</span>
-
-  instance<span class="token punctuation">.</span>interceptors<span class="token punctuation">.</span>response<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>
-    <span class="token punctuation">(</span>response<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-      <span class="token comment" spellcheck="true">/** 如果当前返回了，那么执行回调 */</span>
-      <span class="token keyword">if</span> <span class="token punctuation">(</span>response<span class="token punctuation">.</span>config<span class="token punctuation">.</span>url<span class="token operator">?</span><span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>STATION_URL<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-        <span class="token keyword">const</span> json<span class="token punctuation">:</span> GetStationResponse <span class="token operator">=</span> response<span class="token punctuation">.</span>data
-        <span class="token function">tempResult</span><span class="token punctuation">(</span>json<span class="token punctuation">)</span>
-      <span class="token punctuation">}</span>
-      <span class="token keyword">return</span> response
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  meta<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    type<span class="token punctuation">:</span> <span class="token string">'suggestion'</span><span class="token punctuation">,</span>
+    docs<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      category<span class="token punctuation">:</span> <span class="token string">'Style guide'</span><span class="token punctuation">,</span>
+      description<span class="token punctuation">:</span> <span class="token string">'Ensure all exports appear after other statements.'</span><span class="token punctuation">,</span>
+      url<span class="token punctuation">:</span> <span class="token function">docsUrl</span><span class="token punctuation">(</span><span class="token string">'exports-last'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
-    <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
-      <span class="token keyword">return</span> Promise<span class="token punctuation">.</span><span class="token function">reject</span><span class="token punctuation">(</span>error<span class="token punctuation">)</span>
+    schema<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">create</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      <span class="token function">Program</span><span class="token punctuation">(</span><span class="token punctuation">{</span> body <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">/**使用findLastIndex函数查找body中最后一个非导出语句的索引 */</span>
+        <span class="token keyword">const</span> lastNonExportStatementIndex <span class="token operator">=</span> <span class="token function">findLastIndex</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> isNonExportStatement<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>lastNonExportStatementIndex <span class="token operator">!==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token comment" spellcheck="true">/** 获取索引位置之前的所有节点（包括非导出语句）*/</span>
+          body<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> lastNonExportStatementIndex<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span>node<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">{</span>
+            <span class="token comment" spellcheck="true">// 如果节点不是非导出语句，说明它是一个导出语句</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">isNonExportStatement</span><span class="token punctuation">(</span>node<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+              context<span class="token punctuation">.</span><span class="token function">report</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+                node<span class="token punctuation">,</span>
+                message<span class="token punctuation">:</span> <span class="token string">'Export statements should appear at the end of the file'</span><span class="token punctuation">,</span>
+              <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span></code></pre>
+<blockquote>
+<p>eslint插件中的meta属性</p>
+</blockquote>
+<p><code>meta</code>对象提供了一些元数据，用于描述规则的基本信息和行为。这些信息帮助<code>ESLint</code>和用户了解规则的目的、使用方式以及如何与ESLint的其他部分交互</p>
+<pre class=" language-js"><code class="language-js">meta<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+  <span class="token comment" spellcheck="true">// "problem"、"suggestion"、"layout" 或 "directive"</span>
+  type<span class="token punctuation">:</span> <span class="token string">"suggestion"</span><span class="token punctuation">,</span>
+  docs<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    description<span class="token punctuation">:</span> <span class="token string">"描述"</span><span class="token punctuation">,</span>
+    category<span class="token punctuation">:</span> <span class="token string">"Best Practices"</span><span class="token punctuation">,</span>
+    recommended<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 一个JSON Schema对象，用于定义规则可以接受的选项</span>
+  schema<span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      type<span class="token punctuation">:</span> <span class="token string">"object"</span><span class="token punctuation">,</span>
+      properties<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+        ignoreStrings<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+          type<span class="token punctuation">:</span> <span class="token string">"boolean"</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        ignoreTemplateLiterals<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+          type<span class="token punctuation">:</span> <span class="token string">"boolean"</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      additionalProperties<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
-  <span class="token punctuation">)</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 报错信息提示，通常用context.report({messageId: 'unexpectedConcatenation'})</span>
+  messages<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    unexpectedConcatenation<span class="token punctuation">:</span> <span class="token string">"Unexpected concatenation of literals."</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 指示规则是否能够自动修复发现的问题。如果设置为true，则在ESLint的命令行界面中可以使用--fix选项自动修复问题</span>
+  fixable<span class="token punctuation">:</span> <span class="token string">"code"</span><span class="token punctuation">,</span>
+  <span class="token comment" spellcheck="true">// 指示规则是否能够提供代码修复的建议。这通常用于--fix选项无法自动修复问题，但规则可以提供一些手动修复建议的情况</span>
+  hasSuggestions<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
 <span class="token punctuation">}</span></code></pre>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>因为接口一直在排队，可能会造成影响，比如<code>devtool -&gt;  network</code> 是看不到请求的</p>
+<blockquote>
+<p>create 方法</p>
+</blockquote>
+<p>在create 方法中我们可以解析遍历<code>AST</code>, 其入参是<code>context</code>,有以下属性</p>
+<ul>
+<li>parserOptions-编译器选项，就是我们.eslintrc.js里的那个</li>
+<li>id-规则id</li>
+<li>options-通过这个可以拿到规则传进来的参数</li>
+<li>getFilename()-返回源文件文件名</li>
+<li>getScope()- 返回当前遍历节点的作用域</li>
+<li>getSourceCode()- 返回SourceCode对象，就是源码对象，很有用</li>
+<li>report()- 当校验不通过的时候，通过这个方法输出错误信息</li>
+<li>可以通过 <code>context.settings</code> 拿到<code>.eslintrc.js</code> 全局设置的settings</li>
+</ul>
+<p>在来另一个例子，使用<code>fix</code> 去修复代码</p>
+<pre class=" language-js"><code class="language-js">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+  meta<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    type<span class="token punctuation">:</span> <span class="token string">'suggestion'</span><span class="token punctuation">,</span>
+    docs<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      category<span class="token punctuation">:</span> <span class="token string">'Static analysis'</span><span class="token punctuation">,</span>
+      description<span class="token punctuation">:</span> <span class="token string">'Forbid import of modules using absolute paths.'</span><span class="token punctuation">,</span>
+      url<span class="token punctuation">:</span> <span class="token function">docsUrl</span><span class="token punctuation">(</span><span class="token string">'no-absolute-path'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    fixable<span class="token punctuation">:</span> <span class="token string">'code'</span><span class="token punctuation">,</span>
+    schema<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token function">makeOptionsSchema</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+  <span class="token function">create</span><span class="token punctuation">(</span>context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">function</span> <span class="token function">reportIfAbsolute</span><span class="token punctuation">(</span>source<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isAbsolute</span><span class="token punctuation">(</span>source<span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        context<span class="token punctuation">.</span><span class="token function">report</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+          node<span class="token punctuation">:</span> source<span class="token punctuation">,</span>
+          message<span class="token punctuation">:</span> <span class="token string">'Do not import modules using an absolute path'</span><span class="token punctuation">,</span>
+          <span class="token function">fix</span><span class="token punctuation">(</span>fixer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token keyword">const</span> resolvedContext <span class="token operator">=</span> context<span class="token punctuation">.</span>getPhysicalFilename <span class="token operator">?</span> context<span class="token punctuation">.</span><span class="token function">getPhysicalFilename</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> context<span class="token punctuation">.</span><span class="token function">getFilename</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">// node.js and web imports work with posix style paths ("/")</span>
+            <span class="token keyword">let</span> relativePath <span class="token operator">=</span> path<span class="token punctuation">.</span>posix<span class="token punctuation">.</span><span class="token function">relative</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">dirname</span><span class="token punctuation">(</span>resolvedContext<span class="token punctuation">)</span><span class="token punctuation">,</span> source<span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>relativePath<span class="token punctuation">.</span><span class="token function">startsWith</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+              relativePath <span class="token operator">=</span> <span class="token template-string"><span class="token string">`./</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>relativePath<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span> fixer<span class="token punctuation">.</span><span class="token function">replaceText</span><span class="token punctuation">(</span>source<span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>relativePath<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">{</span> esmodule<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> commonjs<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token operator">...</span>context<span class="token punctuation">.</span>options<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token function">moduleVisitor</span><span class="token punctuation">(</span>reportIfAbsolute<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+<h2 id="自己写一个plugin"><a href="#自己写一个plugin" class="headerlink" title="自己写一个plugin"></a>自己写一个plugin</h2><ol>
+<li>导入的模块名需要是下划线或是驼峰式</li>
+<li>除了个别目录外不能跨目录导入文件，比如说不能跨模块导入组件等，但可以在子级下导入文件</li>
+</ol>
 
         </div>
 
@@ -623,7 +684,7 @@
                 <span class="tag">
                     
                     
-                        <a href="/tags/axios/"># axios</a>
+                        <a href="/tags/eslint/"># eslint</a>
                     
                         
                 </span>
@@ -660,10 +721,8 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2024/06/03/%E4%BB%8Eeslint-plugin-import%E4%B8%AD%E5%AD%A6%E4%B9%A0%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E6%8F%92%E4%BB%B6/">从eslint-plugin-import中学习如何开发插件</a>
             
-            
-            <a class="next" rel="next" href="/2024/03/18/webpack%20ModuleFederation%20%E5%B0%9D%E8%AF%95/">webpack ModuleFederation 尝试</a>
+            <a class="next" rel="next" href="/2024/05/23/axios%20%E6%8B%A6%E6%88%AA%E5%99%A8/">使用 axios 拦截器为请求特殊添加请求值</a>
             
         </section>
 
